@@ -1,0 +1,27 @@
+{
+    "name": "angles",
+    "description": "XML editing mode for the Ajax.org Code Editor with support for TEI",
+    "version": "0.0.1",
+    "homepage": "https://github.com/umd-mith/angles",
+    "engines": {"node": ">= 0.6.0"},
+    "main": "dist/angles",
+    "repository": {
+        "type": "git",
+        "url" : "https://github.com/umd-mith/angles.git"
+    },
+    "dependencies": {
+        "ace": "1.0.0",
+        "dryice": ""
+    },
+    "mappings": {
+        "angles": ".",
+        "ace": "lib/ace"
+    },
+    "licenses": [{
+        "type": "BSD New",
+        "url": "http://opensource.org/licenses/BSD-3-Clause"
+    }],
+    "directories": {
+        "lib": "dist/angles"
+    }
+}
