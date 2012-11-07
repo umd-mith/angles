@@ -146,6 +146,12 @@ var TEIValidator = function() {
       if(!this.$schema.hasOwnProperty(els[0].name)) {
         parser.validationError("Invalid root element: " + els[0].name + ".");
       }
+      else {
+        var rexp = new RegExp(this.$schema._start, "ig");
+        if(rexp.exec(els[0].name+",") == null) {
+          parser.validationError("Invalid root element: " + els[0].name + ".");
+        }
+      }
       return;
     }
 
@@ -170,7 +176,7 @@ var TEIValidator = function() {
 
     var rexp = new RegExp(this.$schema[currentEl.name].model, "ig");
     if(rexp.exec(childNames) == null) {
-      parser.validationError(currentEl.name + " is invalid.");
+      parser.validationError(currentEl.name + " is invalid: one or more required children are missing or its child elements are in the wrong order.");
     }
   };
 
@@ -209,5 +215,8 @@ var TEIValidator = function() {
       }
     });
     parser.parse(editor);
+    this.$errors = parser.$errors;
   };
+
+  this.errors = function() { return this.$errors; }
 };
