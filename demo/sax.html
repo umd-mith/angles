@@ -13,17 +13,23 @@
 </style>
 </head>
 <body>
-<div id="validate" onclick="validate()">Validate</div><div id="saveText">Save</div>
+<div id="validate" onclick="validate()">Validate</div><div id="login">Login</div>
 <div id="editor">&lt;!-- 
  Some TEI document here 
   --&gt;</div>
-    
+ <!--  Add your Google Client ID here -->
+  <script src="./config.js" type="text/javascript" charset="utf-8"></script> 
+ <!-- ^^^^^^^^ -->
+ 
+<script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>    
 <script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="../dist/mode-tei.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/sax.js" type="text/javascript" charset="utf-8"></script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/underscore-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../deps/client.js" type="text/javascript" charset="utf-8"></script>
+<script src="./GoogleDriveStorage.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
 var curschema = null; 
 var curEle = null;
@@ -75,7 +81,6 @@ SaxCallbacks = {
       isValid: function(parser,ele){
     	  	if (ele!=null){
       		sEle = _.find(curschema, function(val,key){
-      			console.log(key);
       			return key == ele.name;
       		});
                 if(sEle != null) {
@@ -87,7 +92,7 @@ SaxCallbacks = {
       			parser.validationError(ele.name+" Invalid");
       		}
       		else{
-      			// this.validationError(ele.name+" Complete");
+      			
       		}
       		}
 		}
@@ -99,7 +104,7 @@ SaxCallbacks = {
 
 
     var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
+    //editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("angles/mode/tei");
     var validator = new SAXParser(
     		SaxCallbacks
@@ -109,6 +114,7 @@ SaxCallbacks = {
     	 validator.parse(editor);
     	 
     }
+
 </script>
 <script src="./rng.js" type="text/javascript" charset="utf-8"></script>
 </body>
