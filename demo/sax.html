@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Angles Editor Demo</title>
+<style type="text/css" media="screen">
+    #editor { 
+        position: absolute;
+        top: 50px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+</style>
+</head>
+<body>
+<div id="validate" onclick="validate()">Validate</div><div id="saveText">Save</div>
+<div id="editor">&lt;!-- 
+ Some TEI document here 
+  --&gt;</div>
+    
+<script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="../dist/mode-tei.js" type="text/javascript" charset="utf-8"></script>
+<script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
+<script src="../src/sax.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="../deps/underscore-min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+var curschema = null; 
+var curEle = null;
+var lastEle = null;
+function schema(s){
+	
+	curschema = s;
+	
+}
+SaxCallbacks = {
+	  
+	  startDocument: function() { 
+	  		curEle = {"name":"","node":{},"children":[]};
+	  },
+      endDocument: function() { 
+      		
+      },
+      startElement: function(node) { 
+      		tagName = node.local;
+      		newEle = {"name":tagName,"node":node,"children":[]};
+      	  if (curEle != null){
+      		curEle.children.push(tagName);
+      	  }
+      		
+      		//v = SaxCallbacks.isValid(this,curEle);
+      	    // Do whatever validation notify here
+      	    lastEle = curEle;
+      	    curEle = newEle; 		
+       },
+      endElement: function(node) {
+    	 
+            if ((node !=  curEle.name)&&(curEle!=null)){
+            	alert(node.local+" "+curEle.name);
+            	//alert("not well formed");
+            }
+      		v = SaxCallbacks.isValid(this,curEle);
+      		 // Do whatever validation notify here
+      		curEle = lastEle;
+       },
+      characters: function(text) { 
+    	  if (curEle != null){
+      		curEle.children.push("_text_");
+    	  }
+       },
+      comment: function(comment) { 
+      		// Tear it up and throw it away
+       },
+     
+      isValid: function(parser,ele){
+    	  	if (ele!=null){
+      		sEle = _.find(curschema, function(val,key){
+      			console.log(key);
+      			return key == ele.name;
+      		});
+                if(sEle != null) {
+      		rexp = new RegExp(sEle.model,"ig");
+      		
+      		curKids = curEle.children.toString()+",";
+      	
+      		if (rexp.exec(curKids)==null){
+      			parser.validationError(ele.name+" Invalid");
+      		}
+      		else{
+      			// this.validationError(ele.name+" Complete");
+      		}
+      		}
+		}
+      }
+}
+
+
+
+
+
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("angles/mode/tei");
+    var validator = new SAXParser(
+    		SaxCallbacks
+    );
+    validator.parse(editor);
+    function validate(){
+    	 validator.parse(editor);
+    	 
+    }
+</script>
+<script src="./rng.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>
