@@ -56,7 +56,7 @@ SaxCallbacks = {
       endElement: function(node) {
     	 
             if ((node !=  curEle.name)&&(curEle!=null)){
-            	alert(node.local+" "+curEle.name);
+
             	//alert("not well formed");
             }
       		v = SaxCallbacks.isValid(this,curEle);
