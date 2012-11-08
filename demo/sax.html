@@ -17,6 +17,9 @@
 <div id="editor">&lt;!-- 
  Some TEI document here 
   --&gt;</div>
+<!--  Add your Google Client ID here -->
+  <script src="./config.js" type="text/javascript" charset="utf-8"></script> 
+<!-- ^^^^^^^^ -->
     
 <script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="../dist/mode-tei.js" type="text/javascript" charset="utf-8"></script>
@@ -32,11 +35,20 @@
     validator.setSchema();
     function schema(s){
       validator.setSchema(s);
+      validator.validate(editor);
     }
-    validator.validate(editor);
     function validate(){
     	 validator.validate(editor);
-    	 
+    	 editor.focus();
+         var errors = validator.errors(),
+             select = editor.getSelection();
+         
+         if(validator.$errors.length > 0) {
+           select.clearSelection();
+           editor.gotoLine(errors[0].row+1,errors[0].column, true);
+           select.selectWordLeft();
+           select.selectWordLeft();
+         }
     }
 </script>
 <script src="./rng.js" type="text/javascript" charset="utf-8"></script>
