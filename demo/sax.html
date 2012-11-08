@@ -13,20 +13,23 @@
 </style>
 </head>
 <body>
-<div id="validate" onclick="validate()">Validate</div><div id="saveText">Save</div>
+<div id="validate" onclick="validate()">Validate</div><div id="login">Login</div>
 <div id="editor">&lt;!-- 
  Some TEI document here 
   --&gt;</div>
-<!--  Add your Google Client ID here -->
+ <!--  Add your Google Client ID here -->
   <script src="./config.js" type="text/javascript" charset="utf-8"></script> 
-<!-- ^^^^^^^^ -->
-    
+ <!-- ^^^^^^^^ -->
+ 
+<script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>    
 <script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="../dist/mode-tei.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/sax.js" type="text/javascript" charset="utf-8"></script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/underscore-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../deps/client.js" type="text/javascript" charset="utf-8"></script>
+<script src="./GoogleDriveStorage.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     var editor = ace.edit("editor");
     //editor.setTheme("ace/theme/monokai");
