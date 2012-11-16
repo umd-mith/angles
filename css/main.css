@@ -15,6 +15,30 @@
 }
 #sponsors {
 	padding-top: 2%;
+	padding-bottom: 2%;
+}
+#head-copy {
+	line-height: 50px;
+}
+.page-header {
+	border-bottom: none;
+}
+footer {
+	background-color: rgb(66,66,66);
+}
+#footer-content {
+	padding-top: 4em;
+}
+
+#footer-content  p {
+	color: #999;
+}
+.thumbnail {
+	border: none;
+}
+
+#mith-logo {
+	padding-top: 25px;
 }
 
 
