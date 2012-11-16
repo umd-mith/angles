@@ -44,7 +44,9 @@ footer {
 .thumbnail {
 	border: none;
 }
-
+.thumbnails {
+	padding-top: 1em;
+}
 #mith-logo {
 	padding-top: 25px;
 }
