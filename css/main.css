@@ -50,6 +50,13 @@ footer {
 #mith-logo {
 	padding-top: 25px;
 }
+#mc_embed_signup{
+	clear:left; 
+	/*margin-left: -1.25em;*/
+}
+#mc_embed_signup label {
+	font-weight: normal;
+}
 @media (max-width: 480px) {
 	.page-header h1 small {
 		line-height: 40px;
