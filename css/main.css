@@ -51,7 +51,7 @@ footer {
 	padding-top: 25px;
 }
 #mc_embed_signup{
-	clear:left; 
+	/*clear:left; */
 	/*margin-left: -1.25em;*/
 }
 #mc_embed_signup label {
