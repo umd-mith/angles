@@ -10,6 +10,12 @@
  *   validation:start - notice that validation is beginning
  *   validation:end   - notice that validation has finished
  *   validation:error - the report of a validation error
+ *
+ * If you replace the Angles.ACEEditorView with a different view to wrap
+ * a different editor, you will need to implement a getDocument() function
+ * that returns the same properties as the one here, but with data from
+ * your editor instance. This lets the validator not depend on the ACE
+ * API.
  */
 
 var Angles = {};
@@ -89,6 +95,15 @@ var Angles = {};
 
     setContent: function() {
       this.$editor.setValue(this.model.get('content'));
+    },
+
+    getDocument: function() {
+      me = this;
+      return {
+        getValue: function() { return me.$editor.getValue(); },
+        getLength: function() { return me.$editor.session.getDocument().getLength(); },
+        getLine: function(n) { return me.$editor.session.getDocument().getLine(n); }
+      };
     },
 
     setModel: function(m) {

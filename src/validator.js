@@ -95,10 +95,10 @@ var SAXParser = function(callbacks) {
   };
 };
 
-SAXParser.prototype.parse = function(editor) {
+SAXParser.prototype.parse = function(doc) {
   this.reset();
   var parser = this.$parser;
-  var i, doc = editor.session.getDocument(),
+  var i,
       n = doc.getLength();
 
   parser.onstart();
@@ -109,13 +109,10 @@ SAXParser.prototype.parse = function(editor) {
 
   parser.close();
 
-  editor.session.clearAnnotations();
-
   if(this.validated()) {
     return true;
   }
   else {
-    editor.session.setAnnotations(this.$errors);
     return false;
   }
 };
@@ -146,9 +143,8 @@ var TEIValidator = function(options) {
   this.$angles.dispatcher.on("validation", function() {
     var errors, select;
 
-    if(me.$angles.$editor == null) { return; }
     me.$angles.dispatcher.trigger("validation:start");
-    me.validate(me.$angles.$editor);
+    me.validate(me.$angles.getDocument());
     $(me.errors()).each(function(idx, e) {
       me.$angles.dispatcher.trigger("validation:error", e);
     });
