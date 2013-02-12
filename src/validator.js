@@ -135,26 +135,27 @@ SAXParser.prototype.validated = function() {
 
 var TEIValidator = function(options) {
   var me = this;
+  var dispatcher = this.dispatcher = options.dispatcher;
 
   this.$schema = {};
   this.$errors = [];
   this.$angles = options.anglesView;
 
-  this.$angles.dispatcher.on("validation", function() {
+  dispatcher.on("validation", function() {
     var errors, select;
 
-    me.$angles.dispatcher.trigger("validation:start");
+    dispatcher.trigger("validation:start");
     me.validate(me.$angles.getDocument());
     $(me.errors()).each(function(idx, e) {
-      me.$angles.dispatcher.trigger("validation:error", e);
+      dispatcher.trigger("validation:error", e);
     });
-    me.$angles.dispatcher.trigger("validation:end");
+    dispatcher.trigger("validation:end");
   });
 };
 
 TEIValidator.prototype.setSchema = function(s) { 
   this.$schema = s; 
-  this.$angles.dispatcher.trigger("validation");
+  this.dispatcher.trigger("validation");
 };
 
 TEIValidator.prototype.checkSchema = function(parser,els) {

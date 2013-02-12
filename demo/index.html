@@ -24,7 +24,7 @@
         <div class="navbar navbar-inverse">
             <div class="navbar-inner">
                 <ul class="nav">
-                    <li><a href="#" onclick="validate()">Validate</a></li>
+                    <li><a href="#" id="validateAction">Validate</a></li>
                     <li><a href="#">Login</a></li>
                 </ul>
             </div>
@@ -38,20 +38,84 @@ Some TEI document here
 --&gt;</div>
 </div>
 <div class="span3">
-    <div id="liveDocs">
-        
-    </div>
+  <h2>Local Storage</h2>
+  <ul class="unstyled">
+    <li><a href="#saveModal" role="button" class="btn" data-toggle="modal">Save As...</a></li>
+    <li><a id="saveFile" role="button" class="btn">Save File</a></li>
+    <li><a href="#loadModal" role="button" class="btn" data-toggle="modal">Load File</a></li>
+  </ul>
 </div>            
 </div>
 </div>
+<div id="saveModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3>Save Document As...</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="fileName">Filename</label>
+        <div class="controls">
+          <input type="text" id="fileName" placeholder="file name">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="saveModalAction">Save Document</button>
+  </div>
+</div>
+<div id="loadModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3>Load Document</h3>
+  </div>
+  <div class="modal-body">
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="loadDocumentAction">Load Document</button>
+  </div>
+</div>
+
+<div style="display: none;">
+  <div id="file-list-template">
+    <form class="file-list">
+    </form>
+  </div>
+  <div id="file-item-template">
+    <label class="checkbox">
+      <input type="radio" name="file" value="{{ id }}"> {{- name }} 
+    </label>
+  </div>
+</div>
+<!--script src="js/jquery.js" type="text/javascript" charset="utf-8"></script-->
 <script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>    
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>    
 <script src="../deps/underscore-min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/backbone-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../deps/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
+    /*
+     * We create a local storage object and tie it into our document 
+     * collection. We pre-fetch the collection so that we know which 
+     * documents are available.
+     */
+    var localStore = new Backbone.LocalStorage("SomeCollection");
+    var collection = new Angles.XMLDocumentList();
+    collection.localStorage = localStore;
+    collection.fetch();
+
+    /*
+     * We instantiate the editor view and attach it to the DOM element we
+     * want housing the editor.
+     */
     var angles = new Angles.ACEEditorView({
       el: "#editor",
       theme: "ace/theme/monokai",
@@ -59,14 +123,107 @@ Some TEI document here
     angles.render();
     angles.$editor.setTheme("ace/theme/monokai");
 
-    function validate() { angles.dispatcher.trigger("validation"); }
+    /*
+     * We trigger the validation event when the "Validate" menu item is
+     * clicked.
+     */
+    $("#validateAction").click(function() {
+      angles.dispatcher.trigger("validation"); 
+    });
 
+    /*
+     * We instantiate our validator and give it a reference to the event
+     * dispatcher associated with the above editor. The validator object
+     * will register an event listener for the "validation" event. Thus,
+     * when the #validateAction "Validate" menu item is clicked, the
+     * "validation" event will be triggered and this object will validate
+     * the editor's content.
+     *
+     * The schema(s) function is for use by the schema JavaScript file
+     * loaded elsewhere in this HTML file.
+     */
     var validator = new TEIValidator({
+      dispatcher: angles.dispatcher,
       anglesView: angles
     });
     function schema(s){ validator.setSchema(s); }
 
+    /*
+     * We want to keep track of the current document in the editor, so we
+     * listen for events that cause the editor to switch its content to that
+     * of a different document.
+     */
+    var currentModel;
+    angles.dispatcher.on("document:switch", function(m) {
+      currentModel = m;
+    });
+
+    /*
+     * We automatically load the editor with the "first" document in the
+     * collection, for some value of "first".
+     */
+    if(collection.models.length > 0) {
+      angles.dispatcher.trigger("document:switch", collection.models[0]);
+    }
+
+    /*
+     * We only have the editor save its content to the current file if
+     * we have a current model associated with the content. Otherwise, we
+     * have nothing to save to.
+     */
+    $("#saveFile").on('click', function() {
+      if(currentModel != null) {
+        angles.dispatcher.trigger("document:save");
+      }
+    });
+
+    /*
+     * These event handlers deal with saving the content to a new named
+     * document in the collection.
+     */
+    $("#saveModal").on('show', function() {
+      if(currentModel != null) {
+        $("#fileName").val(currentModel.name);
+      }
+    });
+
+    $("#saveModalAction").on('click', function() {
+      var newModel = collection.create({
+        name: $("#fileName").val(),
+        content: angles.getContent()
+      });
+      angles.dispatcher.trigger("document:switch", newModel);
+      $("#saveModal").modal("hide");
+    });
+
+    /*
+     * Here, we handle showing the list of files in the local store and
+     * allow selection of one. If we have a model/document to load, we
+     * trigger a "document:switch" event to load in the new model/document.
+     */
+    var selector = new Angles.FileSelector({ collection: collection });
+
+    $("#loadModal").on('show', function() {
+      // we want to show a list of models and allow selection
+      selector.render().$el.appendTo($("#loadModal > .modal-body"));
+    });
+
+    $("#loadDocumentAction").on('click', function() {
+      var fileId = $("#loadModal > .modal-body input[type='radio'][name='file']:checked").val();
+      var model;
+      if(fileId != null) {
+        $.each(collection.models, function(idx, m) {
+          if(m.attributes.id === fileId) { model = m; }
+        });
+        if(model != null) {
+          angles.dispatcher.trigger("document:switch", model);
+        }
+      }
+      $("#loadModal").modal('hide');
+    });
 </script>
+<!-- We load the schema from rng.js. This file uses the schema(s) function
+     above to load the schema data into the validator object. -->
 <script src="./rng.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>
