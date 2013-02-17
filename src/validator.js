@@ -95,10 +95,10 @@ var SAXParser = function(callbacks) {
   };
 };
 
-SAXParser.prototype.parse = function(editor) {
+SAXParser.prototype.parse = function(doc) {
   this.reset();
   var parser = this.$parser;
-  var i, doc = editor.session.getDocument(),
+  var i,
       n = doc.getLength();
 
   parser.onstart();
@@ -109,13 +109,10 @@ SAXParser.prototype.parse = function(editor) {
 
   parser.close();
 
-  editor.session.clearAnnotations();
-
   if(this.validated()) {
     return true;
   }
   else {
-    editor.session.setAnnotations(this.$errors);
     return false;
   }
 };
@@ -138,27 +135,27 @@ SAXParser.prototype.validated = function() {
 
 var TEIValidator = function(options) {
   var me = this;
+  var dispatcher = this.dispatcher = options.dispatcher;
 
   this.$schema = {};
   this.$errors = [];
   this.$angles = options.anglesView;
 
-  this.$angles.dispatcher.on("validation", function() {
+  dispatcher.on("validation", function() {
     var errors, select;
 
-    if(me.$angles.$editor == null) { return; }
-    me.$angles.dispatcher.trigger("validation:start");
-    me.validate(me.$angles.$editor);
+    dispatcher.trigger("validation:start");
+    me.validate(me.$angles.getDocument());
     $(me.errors()).each(function(idx, e) {
-      me.$angles.dispatcher.trigger("validation:error", e);
+      dispatcher.trigger("validation:error", e);
     });
-    me.$angles.dispatcher.trigger("validation:end");
+    dispatcher.trigger("validation:end");
   });
 };
 
 TEIValidator.prototype.setSchema = function(s) { 
   this.$schema = s; 
-  this.$angles.dispatcher.trigger("validation");
+  this.dispatcher.trigger("validation");
 };
 
 TEIValidator.prototype.checkSchema = function(parser,els) {
