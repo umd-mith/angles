@@ -105,8 +105,8 @@ SAXParser.prototype.parse = function(doc) {
   
   for(i = 0; i < n; i += 1) {
     parser.write(doc.getLine(i) + "\n");
+  
   }
-
   parser.close();
 
   if(this.validated()) {
@@ -136,25 +136,45 @@ SAXParser.prototype.validated = function() {
 var TEIValidator = function(options) {
   var me = this;
   var dispatcher = this.dispatcher = options.dispatcher;
+  var mode = options.mode;
 
   this.$schema = {};
+  this.$validator = options.validator ? options.validator : false;
   this.$errors = [];
   this.$angles = options.anglesView;
 
+  doc = me.$angles.getDocument();
+
   dispatcher.on("validation", function() {
     var errors, select;
-
     dispatcher.trigger("validation:start");
-    me.validate(me.$angles.getDocument());
-    $(me.errors()).each(function(idx, e) {
-      dispatcher.trigger("validation:error", e);
-    });
-    dispatcher.trigger("validation:end");
+    if (mode=='local') {
+      me.validate(doc);
+    }
+    else if (mode=='server'){
+      me.validateSrv(doc, me.genericSrvValidatorHandler);
+    } 
+    else {
+      console.log('Validation mode not recognized')
+      return;
+    }    
   });
 };
 
+TEIValidator.prototype.displayErrors = function() {
+  var me = this;
+  $(me.errors()).each(function(idx, e) {
+    dispatcher.trigger("validation:error", e);
+  });
+  me.endValidation();
+};
+
+TEIValidator.prototype.endValidation = function() {
+  dispatcher.trigger("validation:end");
+}
+
 TEIValidator.prototype.setSchema = function(s) { 
-  this.$schema = s; 
+  this.$schema = s;
   this.dispatcher.trigger("validation");
 };
 
@@ -239,6 +259,42 @@ TEIValidator.prototype.validate = function(editor) {
   });
   parser.parse(editor);
   this.$errors = parser.$errors;
+
+  this.displayErrors();
+
+};
+
+/* Override this, or provide your own connection to the server */
+TEIValidator.prototype.validateSrv = function(editor, validatorHandler) {
+  var me = this;
+  xmlDocument = escape(editor.getValue());
+  $.ajax({
+    url: me.$validator,
+    type: "POST",
+    crossDomain: true,
+    processData: false,
+    data: "schema="+me.$schema+"&document="+xmlDocument,
+    dataType: "jsonp",
+    success: function (data) {validatorHandler(me, data)},
+    error: function(data) { console.log("Server cannot be reached");}
+  });
+
+};
+
+/* Override this, or provide your own validator handler if your validator returns a different response */
+TEIValidator.prototype.genericSrvValidatorHandler = function (self, validatorResponse) {
+  var me = self;
+  me.$errors = [];
+  for (var i=0; i<validatorResponse.length; i++) {
+    console.log(validatorResponse[i]);
+    me.$errors.push({
+      text: validatorResponse[i]["message"],
+      row: validatorResponse[i]["line"]-1, // Empirical adjustment. FIX.
+      column: validatorResponse[i]["column"],
+      type: validatorResponse[i]["type"]
+    });
+  }
+  me.displayErrors();
 };
 
 TEIValidator.prototype.errors = function() { return this.$errors; };
