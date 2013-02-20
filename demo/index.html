@@ -144,7 +144,8 @@ Some TEI document here
      */
     var validator = new TEIValidator({
       dispatcher: angles.dispatcher,
-      anglesView: angles
+      anglesView: angles,
+      mode: 'local'
     });
     function schema(s){ validator.setSchema(s); }
 
