@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Angles Editor Demo</title>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<style type="text/css" media="screen">
+    #editor { 
+        position: relative !important;
+        height: 30em;
+    }
+    body {
+        padding-top: 90px;
+    }
+</style>
+</head>
+<body>
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="#"><img src="img/angles_logo_red-trans.png"></a>
+            </div>
+        </div>
+    </div>
+        <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li><a href="#" id="validateSrvAction">Validate via server</a></li>
+                    <li><a href="#">Login</a></li>
+                </ul>
+            </div>
+        </div>
+
+    <div class="span">
+        <form id="schema">
+          <fieldset>
+            <legend>Validate with</legend>
+            <input type="radio" name="selSchema" id="TEI_lite" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_lite.rng" checked/><label for="TEI_lite">TEI Lite (default)</label>
+            <input type="radio" name="selSchema" id="TEI_tite" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_tite.rng"/><label for="TEI_Tite">TEI Tite</label>
+            <input type="radio" name="selSchema" id="TEI_bare" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_bare.rng"/><label for="TEI_bare">TEI Bare</label>
+            <input type="radio" name="selSchema" id="TEI_corpus" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_corpus.rng"/><label for="TEI_corpus">TEI Corpus</label>
+            <input type="radio" name="selSchema" id="TEI_MS" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_ms.rng"/><label for="TEI_MS">TEI MS Desc</label>
+            <input type="radio" name="selSchema" id="TEI_drama" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_drama.rng"/><label for="TEI_drama">TEI Drama</label>
+            <input type="radio" name="selSchema" id="TEI_speech" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_speech.rng"/><label for="TEI_speech">TEI Speech</label>
+            <input type="radio" name="selSchema" id="TEI_odds" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_odds.rng"/><label for="TEI_odds">TEI ODD</label>
+            <input type="radio" name="selSchema" id="TEI_all" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng"/><label for="TEI_all">TEI All</label>
+            <input type="radio" name="selSchema" id="TEI_all" value="https://raw.github.com/TEI-Music-SIG/tei-mei/master/schemata/tei-lite_mei-cmn.rng"/><label for="TEI_all">TEI Lite + MEI CMN</label>            
+          </fieldset>
+        </form>
+    </div>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="span9">
+            <div id="editor">&lt;!-- 
+Some TEI document here 
+--&gt;</div>
+</div>
+<div class="span3">
+  <h2>Local Storage</h2>
+  <ul class="unstyled">
+    <li><a href="#saveModal" role="button" class="btn" data-toggle="modal">Save As...</a></li>
+    <li><a id="saveFile" role="button" class="btn">Save File</a></li>
+    <li><a href="#loadModal" role="button" class="btn" data-toggle="modal">Load File</a></li>
+  </ul>
+</div>            
+</div>
+</div>
+<div id="saveModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3>Save Document As...</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="fileName">Filename</label>
+        <div class="controls">
+          <input type="text" id="fileName" placeholder="file name">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="saveModalAction">Save Document</button>
+  </div>
+</div>
+<div id="loadModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3>Load Document</h3>
+  </div>
+  <div class="modal-body">
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="loadDocumentAction">Load Document</button>
+  </div>
+</div>
+
+<div style="display: none;">
+  <div id="file-list-template">
+    <form class="file-list">
+    </form>
+  </div>
+  <div id="file-item-template">
+    <label class="checkbox">
+      <input type="radio" name="file" value="{{ id }}"> {{- name }} 
+    </label>
+  </div>
+</div>
+<!--script src="js/jquery.js" type="text/javascript" charset="utf-8"></script-->
+<script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>    
+<script src="../deps/underscore-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../deps/backbone-min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../deps/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
+<script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
+<script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
+<script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+    /*
+     * We create a local storage object and tie it into our document 
+     * collection. We pre-fetch the collection so that we know which 
+     * documents are available.
+     */
+    var localStore = new Backbone.LocalStorage("SomeCollection");
+    var collection = new Angles.XMLDocumentList();
+    collection.localStorage = localStore;
+    collection.fetch();
+
+    /*
+     * We instantiate the editor view and attach it to the DOM element we
+     * want housing the editor.
+     */
+    var angles = new Angles.ACEEditorView({
+      el: "#editor",
+      theme: "ace/theme/monokai",
+    });
+    angles.render();
+    angles.$editor.setTheme("ace/theme/monokai");
+
+    /*
+     * We do the same for the "Validate via server" menu item
+     */
+    $("#validateSrvAction").click(function() {
+      angles.dispatcher.trigger("validation"); 
+    });
+
+    $("input[name='selSchema']").change(function(){      
+      schema($(this).val()); 
+      console.log($(this).val());
+    });
+
+    /*
+    * We set a server validator 
+    */
+    var validator = new TEIValidator({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+      validator: "http://localhost:8080/validate",
+      mode: 'server'
+    });  
+    function schema(s){ validator.setSchema(s); }
+
+    /*
+     * We want to keep track of the current document in the editor, so we
+     * listen for events that cause the editor to switch its content to that
+     * of a different document.
+     */
+    var currentModel;
+    angles.dispatcher.on("document:switch", function(m) {
+      currentModel = m;
+    });
+
+    /*
+     * We automatically load the editor with the "first" document in the
+     * collection, for some value of "first".
+     */
+    if(collection.models.length > 0) {
+      angles.dispatcher.trigger("document:switch", collection.models[0]);
+    }
+
+    /*
+     * We only have the editor save its content to the current file if
+     * we have a current model associated with the content. Otherwise, we
+     * have nothing to save to.
+     */
+    $("#saveFile").on('click', function() {
+      if(currentModel != null) {
+        angles.dispatcher.trigger("document:save");
+      }
+    });
+
+    /*
+     * These event handlers deal with saving the content to a new named
+     * document in the collection.
+     */
+    $("#saveModal").on('show', function() {
+      if(currentModel != null) {
+        $("#fileName").val(currentModel.name);
+      }
+    });
+
+    $("#saveModalAction").on('click', function() {
+      var newModel = collection.create({
+        name: $("#fileName").val(),
+        content: angles.getContent()
+      });
+      angles.dispatcher.trigger("document:switch", newModel);
+      $("#saveModal").modal("hide");
+    });
+
+    /*
+     * Here, we handle showing the list of files in the local store and
+     * allow selection of one. If we have a model/document to load, we
+     * trigger a "document:switch" event to load in the new model/document.
+     */
+    var selector = new Angles.FileSelector({ collection: collection });
+
+    $("#loadModal").on('show', function() {
+      // we want to show a list of models and allow selection
+      selector.render().$el.appendTo($("#loadModal > .modal-body"));
+    });
+
+    $("#loadDocumentAction").on('click', function() {
+      var fileId = $("#loadModal > .modal-body input[type='radio'][name='file']:checked").val();
+      var model;
+      if(fileId != null) {
+        $.each(collection.models, function(idx, m) {
+          if(m.attributes.id === fileId) { model = m; }
+        });
+        if(model != null) {
+          angles.dispatcher.trigger("document:switch", model);
+        }
+      }
+      $("#loadModal").modal('hide');
+    });
+</script>
+<!-- We load external RNGs using the schemaSrv(s) function above -->
+<script type="text/JavaScript" charset="utf-8">
+  schema($('#schema input[checked]').val()); 
+</script>
+</body>
+</html>
