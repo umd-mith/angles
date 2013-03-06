@@ -119,6 +119,7 @@ Some TEI document here
 <script src="../deps/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
+<script src="../src/validatorSRV.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     /*
@@ -151,17 +152,15 @@ Some TEI document here
 
     $("input[name='selSchema']").change(function(){      
       schema($(this).val()); 
-      console.log($(this).val());
     });
 
     /*
     * We set a server validator 
     */
-    var validator = new TEIValidator({
+    var validator = new ValidatorSRV({
       dispatcher: angles.dispatcher,
       anglesView: angles,
       validator: "http://localhost:8080/validate",
-      mode: 'server'
     });  
     function schema(s){ validator.setSchema(s); }
 
