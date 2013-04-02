@@ -11,6 +11,10 @@
     body {
         padding-top: 90px;
     }
+    .notifications td {
+      border: 1px solid Black;
+      padding: 1em;
+    }
 </style>
 </head>
 <body>
@@ -30,7 +34,7 @@
             </div>
         </div>
 
-    <div class="container">
+    <div class="container" id="main">
         <div class="row">
             <div class="span9">
             <div id="editor">&lt;!-- 
@@ -90,6 +94,21 @@ Some TEI document here
       <input type="radio" name="file" value="{{ id }}"> {{- name }} 
     </label>
   </div>
+  <div id="notification-list-template">
+    <table class="notifications">
+    </table>
+  </div>
+  <div id="notification-template">
+  <table><tbody>
+    <tr>
+      <td>{{- type }}</td>
+      <td>{{- info }}</td>
+      <td>{{- message }}</td>
+      
+      <td>{{- location.row }}:{{- location.column }}</td>
+    </tr>
+  </tbody></table>
+  </div>
 </div>
 <!--script src="js/jquery.js" type="text/javascript" charset="utf-8"></script-->
 <script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>    
@@ -101,6 +120,7 @@ Some TEI document here
 <script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/validatorSAX.js" type="text/javascript" charset="utf-8"></script>
+<script src="../src/notificationCenter.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     /*
@@ -148,6 +168,14 @@ Some TEI document here
       anglesView: angles,
     });
     function schema(s){ validator.setSchema(s); }
+
+    /*
+     * Set up the notification center
+     */
+    var notificationCenter = new NotificationCenter({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+    });
 
     /*
      * We want to keep track of the current document in the editor, so we
@@ -222,6 +250,13 @@ Some TEI document here
       }
       $("#loadModal").modal('hide');
     });
+
+    notifications = new Angles.NotificationTable({collection: notificationCenter.$notifications});
+    notifications.render().$el.appendTo($('#main'));
+
+    // notificationCenter.$notifications.on('add', function() {
+      
+    // });
 </script>
 <!-- We load the schema from rng.js. This file uses the schema(s) function
      above to load the schema data into the validator object. -->
