@@ -50,6 +50,7 @@ Some TEI document here
   </ul>
 </div>            
 </div>
+<div class="row" id="notifications_area"></div>
 </div>
 <div id="saveModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-header">
@@ -252,11 +253,8 @@ Some TEI document here
     });
 
     notifications = new Angles.NotificationTable({collection: notificationCenter.$notifications});
-    notifications.render().$el.appendTo($('#main'));
-
-    // notificationCenter.$notifications.on('add', function() {
-      
-    // });
+    notifications.render().$el.appendTo($('#notifications_area'));
+    
 </script>
 <!-- We load the schema from rng.js. This file uses the schema(s) function
      above to load the schema data into the validator object. -->
