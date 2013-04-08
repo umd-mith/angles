@@ -144,7 +144,7 @@ var Angles = {};
       this.listenTo(this.model, 'destroy', this.remove);
     },
     render: function() {
-      this.$el.html(this.template(this.model.toJSON().model));
+      this.$el.html(this.template(this.model.toJSON()));
       return this;
     }
   });
@@ -174,7 +174,7 @@ var Angles = {};
       });
       dispatcher.on("validation:start", function() {
         annotations = [];
-        //me.clearNotifications();
+        me.dispatcher.trigger('notification:clear');
       });
       dispatcher.on("validation:error", function(e) {
         annotations.push(e);
