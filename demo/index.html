@@ -11,6 +11,9 @@
     body {
         padding-top: 90px;
     }
+    .notifications {
+      width: 70%;
+    }
     .notifications td {
       border: 1px solid Black;
       padding: 1em;
@@ -254,7 +257,7 @@ Some TEI document here
 
     notifications = new Angles.NotificationTable({collection: notificationCenter.$notifications});
     notifications.render().$el.appendTo($('#notifications_area'));
-    
+
 </script>
 <!-- We load the schema from rng.js. This file uses the schema(s) function
      above to load the schema data into the validator object. -->
