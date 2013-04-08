@@ -14,11 +14,24 @@ NotificationCenter.prototype.init = function(options) {
   //console.log(this.$notifications);
 
   dispatcher.on("notification:push", function(e) {
-    me.pushNotification(e);
+    me.push(e);
+  });
+
+  dispatcher.on("notification:clear", function(e) {
+    me.clear();
   });
 
 };
 
-NotificationCenter.prototype.pushNotification = function(n) {
-  this.$notifications.add({model:n});
+NotificationCenter.prototype.push = function(m) {
+  n = new Angles.Notification();
+  n.set(m);
+  this.$notifications.add(n);
+}
+
+NotificationCenter.prototype.clear = function(){
+  var m;
+  while (m = this.$notifications.first()) {
+    m.destroy();
+  }
 }
