@@ -50,6 +50,7 @@ Some TEI document here
     <li><a href="#saveModal" role="button" class="btn" data-toggle="modal">Save As...</a></li>
     <li><a id="saveFile" role="button" class="btn">Save File</a></li>
     <li><a href="#loadModal" role="button" class="btn" data-toggle="modal">Load File</a></li>
+    <li><a id="downloadFile" role="button" class="btn">Download File</a></li>
   </ul>
 </div>            
 </div>
@@ -122,6 +123,7 @@ Some TEI document here
 <script src="../deps/backbone-min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
+<script src="../deps/FileSaver.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/validatorSAX.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/notificationCenter.js" type="text/javascript" charset="utf-8"></script>
@@ -207,6 +209,13 @@ Some TEI document here
     $("#saveFile").on('click', function() {
       if(currentModel != null) {
         angles.dispatcher.trigger("document:save");
+      }
+    });
+
+    $("#downloadFile").on('click', function() {
+      if(currentModel != null) {
+        var bb = new Blob([currentModel.attributes.content], {"type":"text\/xml"});
+        saveAs(bb, currentModel.attributes.name+'.xml');
       }
     });
 
