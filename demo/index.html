@@ -18,6 +18,13 @@
       border: 1px solid Black;
       padding: 1em;
     }
+    #status_icon {
+      float:right; 
+      display: inline-block; 
+      width:1.5em; 
+      background-color: #4CC423;
+      border: 1px Solid Black;
+    }
 </style>
 </head>
 <body>
@@ -40,6 +47,7 @@
     <div class="container" id="main">
         <div class="row">
             <div class="span9">
+              <span id="status_icon">&nbsp;</span>
             <div id="editor">&lt;!-- 
 Some TEI document here 
 --&gt;</div>
@@ -266,6 +274,14 @@ Some TEI document here
 
     notifications = new Angles.NotificationTable({collection: notificationCenter.$notifications});
     notifications.render().$el.appendTo($('#notifications_area'));
+
+    angles.dispatcher.on("validation:end", function(e) {
+      if (notificationCenter.$notifications.length > 0) {
+        $("#status_icon").css("background-color", "Red");
+      }
+    });
+
+    
 
 </script>
 <!-- We load the schema from rng.js. This file uses the schema(s) function
