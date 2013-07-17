@@ -11,6 +11,17 @@
     body {
         padding-top: 90px;
     }
+    .notifications td {
+      border: 1px solid Black;
+      padding: 1em;
+    }
+    #status_icon {
+      float:right; 
+      display: inline-block; 
+      width:1.5em; 
+      background-color: #4CC423;
+      border: 1px Solid Black;
+    }
 </style>
 </head>
 <body>
@@ -52,6 +63,7 @@
 
         <div class="row">
             <div class="span9">
+              <span id="status_icon">&nbsp;</span>
             <div id="editor">&lt;!-- 
 Some TEI document here 
 --&gt;</div>
@@ -62,9 +74,11 @@ Some TEI document here
     <li><a href="#saveModal" role="button" class="btn" data-toggle="modal">Save As...</a></li>
     <li><a id="saveFile" role="button" class="btn">Save File</a></li>
     <li><a href="#loadModal" role="button" class="btn" data-toggle="modal">Load File</a></li>
+    <li><a id="downloadFile" role="button" class="btn">Download File</a></li>
   </ul>
 </div>            
 </div>
+<div class="row" id="notifications_area"></div>
 </div>
 <div id="saveModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-header">
@@ -109,6 +123,21 @@ Some TEI document here
       <input type="radio" name="file" value="{{ id }}"> {{- name }} 
     </label>
   </div>
+  <div id="notification-list-template">
+    <table class="notifications">
+    </table>
+  </div>
+  <div id="notification-template">
+  <table><tbody>
+    <tr>
+      <td>{{- type }}</td>
+      <td>{{- info }}</td>
+      <td>{{- message }}</td>
+      
+      <td>{{- location.row }}:{{- location.column }}</td>
+    </tr>
+  </tbody></table>
+  </div>
 </div>
 <!--script src="js/jquery.js" type="text/javascript" charset="utf-8"></script-->
 <script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>    
@@ -117,9 +146,10 @@ Some TEI document here
 <script src="../deps/underscore-min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/backbone-min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
-<script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
+<script src="../deps/FileSaver.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/validatorSRV.js" type="text/javascript" charset="utf-8"></script>
+<script src="../src/notificationCenter.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     /*
@@ -165,6 +195,15 @@ Some TEI document here
     function schema(s){ validator.setSchema(s); }
 
     /*
+     * Set up the notification center
+     */
+    var notificationCenter = new NotificationCenter({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+    });
+
+
+    /*
      * We want to keep track of the current document in the editor, so we
      * listen for events that cause the editor to switch its content to that
      * of a different document.
@@ -190,6 +229,13 @@ Some TEI document here
     $("#saveFile").on('click', function() {
       if(currentModel != null) {
         angles.dispatcher.trigger("document:save");
+      }
+    });
+
+    $("#downloadFile").on('click', function() {
+      if(currentModel != null) {
+        var bb = new Blob([currentModel.attributes.content], {"type":"text\/xml"});
+        saveAs(bb, currentModel.attributes.name+'.xml');
       }
     });
 
@@ -237,6 +283,16 @@ Some TEI document here
       }
       $("#loadModal").modal('hide');
     });
+
+    notifications = new Angles.NotificationTable({collection: notificationCenter.$notifications});
+    notifications.render().$el.appendTo($('#notifications_area'));
+
+    angles.dispatcher.on("validation:end", function(e) {
+      if (notificationCenter.$notifications.length > 0) {
+        $("#status_icon").css("background-color", "Red");
+      }
+    });
+
 </script>
 <!-- We load external RNGs using the schemaSrv(s) function above -->
 <script type="text/JavaScript" charset="utf-8">

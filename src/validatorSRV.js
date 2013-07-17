@@ -30,9 +30,19 @@ requestHandler = function(validator) {
     crossDomain: true,
     processData: false,
     data: "schema="+validator.$schema+"&document="+xmlDocument,
-    dataType: "jsonp",
+    dataType: "json",
     success: function (data) {validator.$validationHandler(validator, data)},
-    error: function(data) { console.log("Server cannot be reached");}
+    error: function(xhr, textStatus, thrownError, data) { 
+      me.dispatcher.trigger('notification:clear');
+      thrownError = xhr.status == 0 ? "Cannot reach server" : thrownError;
+      var n = {
+        type: "Server",
+        info: xhr.status,
+        message: thrownError,
+        location: {row: 0, column: 0}
+      }
+      me.dispatcher.trigger('notification:push', n);
+    }
   });
 
 };

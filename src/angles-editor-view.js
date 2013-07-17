@@ -54,6 +54,22 @@ var Angles = {};
     model: Angles.XMLDocument
   });
 
+  // Notification
+  Angles.Notification = Backbone.Model.extend({
+    defaults: {
+      "type": "",
+      "info": "",
+      "message": "",
+      "resource": "",
+      "location": {"column":-1, "row":-1}
+    }
+  });
+
+  // Notification List
+  Angles.NotificationList = Backbone.Collection.extend({
+    model: Angles.Notification
+  });
+
   /*
    * This file selector will list the documents in the Angles.XMLDocumentList
    * collection and allow selection of a document.
@@ -106,6 +122,33 @@ var Angles = {};
     }
   });
 
+  Angles.NotificationTable = Backbone.View.extend({
+    template: _.template($('#notification-list-template').html()),
+    initialize: function() {
+    },
+    render: function() {
+      this.$el.html(this.template({}));
+      this.listenTo(this.collection, 'add', this.addOne);
+      return this;
+    },
+    addOne: function(model) {
+      var view = new Angles.NotificationRow({model: model});
+      this.$("table").append(view.render().$el);
+    }
+  });
+
+  Angles.NotificationRow = Backbone.View.extend({
+    template: _.template($('#notification-template tbody').html()),
+    initialize: function() {
+      this.listenTo(this.model, 'change', this.render);
+      this.listenTo(this.model, 'destroy', this.remove);
+    },
+    render: function() {
+      this.$el.html(this.template(this.model.toJSON()));
+      return this;
+    }
+  });
+
   /*
    * We intend ACEEditorView to be a singleton class for a particular area
    * on the page - not to be instantiated for each document in the collection.
@@ -131,9 +174,17 @@ var Angles = {};
       });
       dispatcher.on("validation:start", function() {
         annotations = [];
+        me.dispatcher.trigger('notification:clear');
       });
       dispatcher.on("validation:error", function(e) {
         annotations.push(e);
+        var n = {
+          type: "validation",
+          info: e.type,
+          message: e.text,
+          location: {row: e.row, column: e.column}
+        }
+        me.dispatcher.trigger('notification:push', n);
       });
       dispatcher.on("validation:end", function() {
         var select = me.$editor.getSelection();
@@ -159,6 +210,25 @@ var Angles = {};
         me.dispatcher.trigger('editor:change', e);
       });
       this.$editor.getSession().setMode("ace/mode/xml");
+
+      me.$editor.commands.addCommand({
+        name: 'contextHelp',
+        bindKey: {win: 'Ctrl-Space',  mac: 'Ctrl-Space'},
+        exec: function(editor) {
+            cursor = editor.getCursorPosition();
+            line = editor.session.getDocument().getLine(cursor.row);
+            sub = line.substring(0, cursor.column);
+            elStart = sub.lastIndexOf('<');
+
+            sub2 = line.substring(elStart, line.length);
+
+            ident = line.match("</?([^ >]+)[^<]+$")[1];
+
+            me.dispatcher.trigger("editor:context", ident);
+        },
+        readOnly: false // false if this command should not apply in readOnly mode
+      });
+
       return this;
     },
 
@@ -200,6 +270,8 @@ var Angles = {};
     clearAnnotations: function() { this.$editor.session.clearAnnotations(); },
 
     setMode: function(m) { this.$editor.getSession().setMode(m); },
+
+    // clearNotifications: function() { this.$editor.session.notifications = null; },
   });
 
 }(Angles,_,Backbone,ace));
