@@ -135,6 +135,7 @@ Some TEI document here
 <script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/validatorSAX.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/notificationCenter.js" type="text/javascript" charset="utf-8"></script>
+<script src="../src/contextHelp.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     /*
@@ -281,11 +282,31 @@ Some TEI document here
       }
     });
 
-    
+    var context = new ContextHelp({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+    });
+    function teijs(o) { 
+      context.setODD(o);
+      angles.dispatcher.on("editor:context", function(i) {
+        desc = context.getDescOf(i);
+        notification = {
+          "type": "desc",
+          "info": "Element Description",
+          "message": desc,
+          "resource": "",
+          "location": {"column":-1, "row":-1}
+        }
+        angles.dispatcher.trigger('notification:clear');
+        notificationCenter.$notifications.add(notification);
+      });
+    }
 
 </script>
 <!-- We load the schema from rng.js. This file uses the schema(s) function
      above to load the schema data into the validator object. -->
 <script src="./rng.js" type="text/javascript" charset="utf-8"></script>
+<!-- Loading the standard p5 subset for contextual help -->
+<script src="./p5subset.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>
