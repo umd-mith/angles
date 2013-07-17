@@ -210,6 +210,25 @@ var Angles = {};
         me.dispatcher.trigger('editor:change', e);
       });
       this.$editor.getSession().setMode("ace/mode/xml");
+
+      me.$editor.commands.addCommand({
+        name: 'contextHelp',
+        bindKey: {win: 'Ctrl-Space',  mac: 'Ctrl-Space'},
+        exec: function(editor) {
+            cursor = editor.getCursorPosition();
+            line = editor.session.getDocument().getLine(cursor.row);
+            sub = line.substring(0, cursor.column);
+            elStart = sub.lastIndexOf('<');
+
+            sub2 = line.substring(elStart, line.length);
+
+            ident = line.match("</?([^ >]+)[^<]+$")[1];
+
+            me.dispatcher.trigger("editor:context", ident);
+        },
+        readOnly: false // false if this command should not apply in readOnly mode
+      });
+
       return this;
     },
 
