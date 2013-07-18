@@ -47,6 +47,7 @@ This repository has the following directories:
 * lib: the source code of ACE as well as Angles
     - lib/ace: The source code for ACE used during the build process
     - lib/angles: The source code for the Angles plugins for ACE
+* src: the source code for non-ACE components that work with the ACE editor
 * test: any unit tests
 
 Development should take place under lib/angles. No changes to files under
