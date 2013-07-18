@@ -56,3 +56,15 @@ To build the plugins for ACE, run the following command:
 
 This will build everything and leave the new files in `dist/`.
 
+
+## Bower and dependencies
+
+Dependencies are a resolved through `bower`. In order to install
+dependencies, run the `install` command:
+
+```
+$ bower install
+```
+
+http://sindresorhus.com/bower-components/
+

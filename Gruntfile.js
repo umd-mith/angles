@@ -6,10 +6,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
-
+  grunt.loadNpmTasks('grunt-contrib-qunit');
+  grunt.loadNpmTasks('grunt-contrib-connect');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -34,6 +34,19 @@ module.exports = function(grunt) {
       dist: {
         src: ['<%= meta.src %>'],
         dest: '<%= meta.dest %>/<%= pkg.name %>.js'
+      }
+    },
+
+    qunit: {
+      all: ['test/**/*.html']
+    },
+
+    connect: {
+      server: {
+        options: {
+          port: 8000,
+          base: '.'
+        }
       }
     },
 
@@ -67,4 +80,9 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+  grunt.registerTask('test', ['connect', 'qunit']);
+
+  grunt.event.on('qunit.spawn', function(url) {
+    grunt.log.ok("Running test: " + url);
+  });
 };
