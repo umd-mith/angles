@@ -33,7 +33,6 @@ throws(block, [expected], [message])
   });
 
   test("Check Angles Namespace", function() {
-    expect(1);
     ok(typeof Angles !== "undefined" && Angles !== null, "Angles namespace defined");
   });
 
