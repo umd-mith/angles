@@ -19,10 +19,15 @@ software through their teaching and research.
 
 ## Development Toolchain
 
+The development up to now has been able to extend the Ace Editor without
+requiring modification of the XML mode, so the rest of this section is
+nascent until such time that the XML mode must be modified to support some
+functionality being added to ANGLES.
+
 Angles is based on the [Ace Editor](http://ace.ajax.org/) and derives its
 build environment from that used by the Ace development team. This means that
 you need the following installed before you can work on the JavaScript
-source code:
+source code for the TEI mode:
 
 * make
 * node
@@ -42,6 +47,7 @@ This repository has the following directories:
 * lib: the source code of ACE as well as Angles
     - lib/ace: The source code for ACE used during the build process
     - lib/angles: The source code for the Angles plugins for ACE
+* src: the source code for non-ACE components that work with the ACE editor
 * test: any unit tests
 
 Development should take place under lib/angles. No changes to files under
