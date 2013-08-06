@@ -6,22 +6,31 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
+  //grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-coffee');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    meta: {
-      src: 'src/**/*.js',
-      dest: 'dist/',
-      specs: 'spec/**/*Spec.js',
-      banner: '/* <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("m/d/yyyy") %>\n' +
-        '* <%= pkg.homepage %>\n' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>\n' +
-        '* Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
+     meta: {
+       src: 'src/**/*.js',
+       dest: 'dist/',
+       specs: 'spec/**/*Spec.js',
+       banner: '/* <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("m/d/yyyy") %>\n' +
+         '* <%= pkg.homepage %>\n' +
+         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>\n' +
+         '* Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
+     },
+
+    coffee: {
+      compile: {
+        files: {
+          'dist/angles.js': ['src/*.coffee']
+        }
+      }
     },
 
     uglify: {
@@ -49,7 +58,7 @@ module.exports = function(grunt) {
         }
       }
     },
-
+/*
     jshint: {
       files: [
         '<%= meta.src %>'
@@ -67,11 +76,11 @@ module.exports = function(grunt) {
         }
       }
     },
-
+*/
     watch: {
       scripts: {
         files: '<%= meta.src %>',
-        tasks: ['jshint', 'concat', 'uglify'],
+        tasks: [/*'jshint', 'concat'*/ 'coffee', 'uglify'],
         options: {
           interrupt: true
         }
@@ -79,7 +88,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+  grunt.registerTask('default', [/*'jshint', 'concat'*/ 'coffee', 'uglify']);
   grunt.registerTask('test', ['connect', 'qunit']);
 
   grunt.event.on('qunit.spawn', function(url) {
