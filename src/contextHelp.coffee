@@ -1,35 +1,20 @@
-/* --- ContextHelp --- */
+# --- ContextHelp --- 
 
-var ContextHelp = function() {};
+class Angles.ContextHelp
+  constructor: (options) ->
+    dispatcher = @dispatcher = options.dispatcher
+    @$odd = {}
+    @$angles = options.anglesView
 
-ContextHelp.prototype.init = function(options) {
-  var me = this;
-  var dispatcher = this.dispatcher = options.dispatcher;
+  setODD: (o) -> @$odd = o
 
-  this.$odd = {};
-  this.$angles = options.anglesView;
-};
+  getODDfor: (e) ->
+    elements = @$odd.members
+    for item in elements
+      if item.ident == e
+        return item
+    null
 
-ContextHelp.prototype.setODD = function(o) { 
-  this.$odd = o;
-};
+  getDescOf: (e) -> @getODDfor(e)?.desc
 
-ContextHelp.prototype.getODDfor = function(e) { 
-  var elements = this.$odd.members
-  for (var i=0;i<elements.length;i++) {
-      var item = elements[i];
-      if (item["ident"] == e) {
-        return item;
-      }
-  }
-};
-
-ContextHelp.prototype.getDescOf = function(e) { 
-  item = this.getODDfor(e);
-  return item["desc"];
-};
-
-ContextHelp.prototype.getValidChildrenOf = function(e) { 
-  item = this.getODDfor(e);
-  return item["desc"];
-};
+  getValidChildrenOf: (e) -> @getODDfor(e)?.desc

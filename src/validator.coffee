@@ -1,31 +1,21 @@
-/* --- Validator --- */
+# --- Validator --- 
 
-var Validator = function() {};
+class Angles.Validator
+  constructor: (options) ->
+    dispatcher = @dispatcher = options.dispatcher
+    @$schema = {}
+    @$errors = []
+    @$angles = options.anglesView
 
-Validator.prototype.init = function(options) {
-  var me = this;
-  var dispatcher = this.dispatcher = options.dispatcher;
+  displayErrors: ->
+    for e in @errors()
+      @dispatcher.trigger "validation:error", e
+    @endValidation()
 
-  this.$schema = {};
-  this.$errors = [];
-  this.$angles = options.anglesView;
-};
+  endValidation: -> @dispatcher.trigger "validation:end"
 
-Validator.prototype.displayErrors = function() {
-  var me = this;
-  $(me.errors()).each(function(idx, e) {
-    dispatcher.trigger("validation:error", e);
-  });
-  me.endValidation();
-};
+  setSchema: (s) ->
+    @$schema = s
+    @dispatcher.trigger "validation"
 
-Validator.prototype.endValidation = function() {
-  dispatcher.trigger("validation:end");
-}
-
-Validator.prototype.setSchema = function(s) { 
-  this.$schema = s;
-  this.dispatcher.trigger("validation");
-};
-
-Validator.prototype.errors = function() { return this.$errors; };
+  errors: -> @$errors

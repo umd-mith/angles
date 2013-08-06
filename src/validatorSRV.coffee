@@ -1,62 +1,51 @@
-/* --- ValidatorSRV - Extends Validator --- */
+# --- ValidatorSRV - Extends Validator ---
 
-var ValidatorSRV = function(options) { 
-	this.init(options); 
-	this.$validatorUrl = options.validator
+class Angles.ValidatorSRV extends Angles.Validator
+  constructor: (options) ->
+    super(options)
+    @$validatorUrl = options.validator
 
-	/* If an ajax request to a server and a request handler are provided, set them here.
-	Otherwise use example handlers below. */
-	this.$requestHandler = options.requestHandler != undefined ? options.requestHandler : requestHandler;
-	this.$validationHandler = options.validationHandler != undefined ? options.validationHandler : validationHandler;
+    # If an ajax request to a server and a request handler are provided, set them here.
+    # Otherwise use example handlers below.
+    @$requestHandler = if options.requestHandler? then options.requestHandler else requestHandler
+    @$validationHandler = if options.validationHandler? then options.validationHandler else validationHandler
 
-	var me = this;	
+    @dispatcher.on "validation", =>
+      @dispatcher.trigger "validation:start"
+      @$requestHandler @
 
-	dispatcher.on("validation", function() {
-	    var errors, select;
-	    dispatcher.trigger("validation:start");
-	    me.$requestHandler(me);
-	});
-};
+  # Override this, or provide your own validation handler if your validator returns a different response
+  requestHandler = (validator) ->
+    doc = validator.$angles.getDocument()
+    xmlDocument = escape(doc.getValue())
+    $.ajax
+      url: validator.$validatorUrl
+      type: "POST"
+      crossDomain: true
+      processData: false
+      data: "schema="+validator.$schema+"&document="+xmlDocument
+      dataType: "json",
+      success: (data) ->
+        validator.$validationHandler validator, data
+      error: (xhr, textStatus, thrownError, data) =>
+        @dispatcher.trigger 'notification:clear'
+        thrownError = if xhr.status == 0 then "Cannot reach server" else thrownError
+        n =
+          type: "Server"
+          info: xhr.status
+          message: thrownError
+          location:
+            row: 0
+            column: 0
+        @dispatcher.trigger 'notification:push', n
 
-ValidatorSRV.prototype = new Validator();
-
-/* Override this, or provide your own validation handler if your validator returns a different response */
-requestHandler = function(validator) {
-  doc = validator.$angles.getDocument();
-  xmlDocument = escape(doc.getValue());
-  $.ajax({
-    url: validator.$validatorUrl,
-    type: "POST",
-    crossDomain: true,
-    processData: false,
-    data: "schema="+validator.$schema+"&document="+xmlDocument,
-    dataType: "json",
-    success: function (data) {validator.$validationHandler(validator, data)},
-    error: function(xhr, textStatus, thrownError, data) { 
-      me.dispatcher.trigger('notification:clear');
-      thrownError = xhr.status == 0 ? "Cannot reach server" : thrownError;
-      var n = {
-        type: "Server",
-        info: xhr.status,
-        message: thrownError,
-        location: {row: 0, column: 0}
-      }
-      me.dispatcher.trigger('notification:push', n);
-    }
-  });
-
-};
-
-/* Override this, or provide your own validation handler if your validator returns a different response */
-validationHandler = function (validator, data) {
-  validator.$errors = [];
-  for (var i=0; i<data.length; i++) {
-    validator.$errors.push({
-      text: data[i]["message"],
-      row: data[i]["line"]-1, // Empirical adjustment. FIX.
-      column: data[i]["column"],
-      type: data[i]["type"]
-    });
-  }
-  validator.displayErrors();
-};
+  # Override this, or provide your own validation handler if your validator returns a different response
+  validationHandler = (validator, data) ->
+    validator.$errors = []
+    for datum in data
+      validator.$errors.push
+        text: datum.message
+        row: datum.line-1
+        column: datum.column
+        type: datum.type
+    validator.displayErrors()

@@ -132,11 +132,12 @@ Some TEI document here
 <script src="../deps/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/FileSaver.min.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
+<!-- script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/validatorSAX.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/notificationCenter.js" type="text/javascript" charset="utf-8"></script>
 <script src="../src/contextHelp.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script>
+<script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script -->
+<script src="../dist/angles.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     /*
      * We create a local storage object and tie it into our document 
@@ -178,7 +179,7 @@ Some TEI document here
      * The schema(s) function is for use by the schema JavaScript file
      * loaded elsewhere in this HTML file.
      */
-    var validator = new ValidatorSAX({
+    var validator = new Angles.ValidatorSAX({
       dispatcher: angles.dispatcher,
       anglesView: angles,
     });
@@ -187,7 +188,7 @@ Some TEI document here
     /*
      * Set up the notification center
      */
-    var notificationCenter = new NotificationCenter({
+    var notificationCenter = new Angles.NotificationCenter({
       dispatcher: angles.dispatcher,
       anglesView: angles,
     });
@@ -282,7 +283,7 @@ Some TEI document here
       }
     });
 
-    var context = new ContextHelp({
+    var context = new Angles.ContextHelp({
       dispatcher: angles.dispatcher,
       anglesView: angles,
     });

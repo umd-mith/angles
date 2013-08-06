@@ -1,235 +1,161 @@
-/*
-  For example:
-    var parser = new SAXParser({
-      startDocument: function() { ... },
-      endDocument: function() { ... },
-      startElement: function(node) { ... },
-      endElement: function(node) { ... },
-      characters: function(text) { ... },
-      comment: function(comment) { ... }
-    });
+#
+#  For example:
+#    var parser = new SAXParser({
+#      startDocument: function() { ... },
+#      endDocument: function() { ... },
+#      startElement: function(node) { ... },
+#      endElement: function(node) { ... },
+#      characters: function(text) { ... },
+#      comment: function(comment) { ... }
+#    });
+#
+#    parser.parse(editor);
+#
 
-    parser.parse(editor);
-*/
+# we expect to have the sax-js library available
+class Angles.SAXParser
+  constructor: (callbacks) ->
+    @reset = ->
+      parser = sax.parser true,
+        xmlns: true
+        noscript: true
+        position: true
+      
+      if callbacks.error?
+        parser.onerror = (e) =>
+          callbacks.error.call @, e
+          parser.resume()
+      else
+        parser.onerror = (e) =>
+          @validationError (e.message.split(/\n/))[0] + "."
+          parser.resume()
 
-/* we expect to have the sax-js library available */
-var SAXParser = function(callbacks) {
+      if callbacks.characters?
+        parser.ontext = (t) => callbacks.characters.call @, t
 
-  this.reset = function() {
-    var me = this;
-    var parser = sax.parser(true, {
-      xmlns: true,
-      noscript: true,
-      position: true
-    });
-    
-    if(callbacks['error']) {
-      parser.onerror = function(e) {
-        callbacks.error.call(me, e);
-        parser.resume();
-      };
-    }
-    else {
-      parser.onerror = function(e) {
-        me.validationError((e.message.split(/\n/))[0] + ".");
-        parser.resume();
-      };
-    }
+      if callbacks.startElement?
+        parser.onopentag = (node) => callbacks.startElement.call @, node
+ 
+      if callbacks.endElement?
+        parser.onclosetag = (name) => callbacks.endElement.call @, name
 
-    if(callbacks['characters']) {
-      parser.ontext = function(t) {
-        callbacks.characters.call(me, t);
-      };
-    }
+      if callbacks.comment?
+        parser.oncomment = (comment) => callbacks.comment.call @, comment
 
-    if(callbacks['startElement']) {
-      parser.onopentag = function(node) {
-        callbacks.startElement.call(me, node);
-      };
-    }
+      if callbacks.startCdata?
+        parser.onopencdata = => callbacks.startCdata.call @
 
-    if(callbacks['endElement']) {
-      parser.onclosetag = function(name) {
-        callbacks.endElement.call(me, name);
-      };
-    }
+      if callbacks.cdata?
+        parser.oncdata = (cdata) => callbacks.cdata.call @, cdata
 
-    if(callbacks['comment']) {
-      parser.oncomment = function(comment) {
-        callbacks.comment.call(me, comment);
-      };
-    }
+      if callbacks.endCdata?
+        parser.onclosecdata = => callbacks.endCdata.call @
 
-    if(callbacks['startCdata']) {
-      parser.onopencdata = function() {
-      };
-    }
+      if callbacks.endDocument?
+        parser.onend = => callbacks.endDocument.call @
 
-    if(callbacks['cdata']) {
-      parser.oncdata = function(cdata) {
-      };
-    }
+      if callbacks.startDocument?
+        parser.onstart = => callbacks.startDocument.call @
+      else
+        parser.onstart = ->
 
-    if(callbacks['endCdata']) {
-      parser.onclosecdata = function() {
-      };
-    }
+      @$parser = parser
+      @$errors = [] 
 
-    if(callbacks['endDocument']) {
-      parser.onend = function() {
-        callbacks.endDocument.call(me);
-      };
-    }
+  parse: (doc) ->
+    @reset()
+    parser = @$parser
+    n = doc.getLength()
 
-    if(callbacks['startDocument']) {
-      parser.onstart = function() {
-        callbacks.startDocument.call(me);
-      };
-    }
-    else {
-      parser.onstart = function() { };
-    }
-  
-    this.$parser = parser;
-    this.$errors = [];
-  };
-};
+    parser.onstart()
 
-SAXParser.prototype.parse = function(doc) {
-  this.reset();
-  var parser = this.$parser;
-  var i,
-      n = doc.getLength();
+    for i in [0..n]
+      parser.write doc.getLine(i)+"\n"
+    parser.close()
 
-  parser.onstart();
-  
-  for(i = 0; i < n; i += 1) {
-    parser.write(doc.getLine(i) + "\n");
-  
-  }
-  parser.close();
+    if @validated()
+      true
+    else
+      false
 
-  if(this.validated()) {
-    return true;
-  }
-  else {
-    return false;
-  }
-};
+  validationError: (text, type) ->
+    parser = @$parser
+    @$errors.push
+      text: text
+      row: parser.line
+      column: parser.column
+      type: if type? then type else "error"
 
-SAXParser.prototype.validationError = function(text, type) {
-  var parser = this.$parser;
-  this.$errors.push({
-    text: text,
-    row: parser.line,
-    column: parser.column,
-    type: (typeof type === "undefined" ? "error" : type)
-  });
-};
+  validated: -> @$errors.length == 0
 
-SAXParser.prototype.validated = function() {
-  return(this.$errors.length == 0);
-};
 
-/* --- ValidatorSAX - Extends Validator --- */
+# --- ValidatorSAX - Extends Validator ---
+class Angles.ValidatorSAX extends Angles.Validator
+  constructor: (options) ->
+    super(options)
+    @dispatcher.on "validation", =>
+      doc = @$angles?.getDocument()
+      if doc?
+        @dispatcher.trigger "validation:start"
+        @validate @$angles.getDocument()
 
-var ValidatorSAX = function(options) { 
-	this.init(options); 
+  checkSchema: (parser, els) ->
+    return unless @$schema?
 
-	var me = this;
-	doc = me.$angles.getDocument();
+    if els?.length == 1
+      if not @$schema.hasOwnProperty els[0]?.name
+        parser.validationError "Invalid root element: " + els[0].name + "."
+      else
+        rexp = new RegExp @$schema._start, "ig"
+        if rexp.exec(els[0].name+",") == null
+          parser.validationError "Invalud root element: " + els[0].name + "."
+      return
 
-	dispatcher.on("validation", function() {
-	    var errors, select;
-	    dispatcher.trigger("validation:start");
-	    me.validate(doc);
-	});
-};
+    currentEl = els[0].name
+    parentEl = els[1].name
 
-ValidatorSAX.prototype = new Validator();
+    if currentEl not in @$schema[parentEl]?.children
+      parser.validationError "The #{currentEl} element is not allowed as a child of the #{parentEl} element."
+      return
 
-ValidatorSAX.prototype.checkSchema = function(parser,els) {
-  if(typeof this.$schema === "undefined") { return; }
+  checkChildren: (parser, els) ->
+    return unless @$schema?
 
-  if(els.length == 1) {
-    if(!this.$schema.hasOwnProperty(els[0].name)) {
-      parser.validationError("Invalid root element: " + els[0].name + ".");
-    }
-    else {
-      var rexp = new RegExp(this.$schema._start, "ig");
-      if(rexp.exec(els[0].name+",") == null) {
-        parser.validationError("Invalid root element: " + els[0].name + ".");
-      }
-    }
-    return;
-  }
+    return unless els.length > 0
 
-  var currentEl = els[0].name,
-      parentEl = els[1].name;
+    currentEl = els[0]
+    childNames = currentEl.children.join(',')
+    childNames += "," if childNames != ""
 
-  if(this.$schema[parentEl].children.indexOf(currentEl) == -1) {
-    parser.validationError("The " + currentEl + " element is not allowed as a child of the " + parentEl + " element.");
-    return;
-  }
-};
+    return unless @$schema.hasOwnProperty(currentEl?.name)
+    return unless @$schema[currentEl.name].hasOwnProperty("model")
 
-ValidatorSAX.prototype.checkChildren = function(parser,els) {
-  var currentEl, childNames, rexp;
+    rexp = new RegExp @$schema[currentEl.name].model, "ig"
+    if rexp.exec(childNames) == null
+      parser.validationError currentEl.name + " is invalid: one or more required children are missing or its child elements are in the wrong order."
 
-  if(typeof this.$schema === "undefined") { return; }
-
-  // we only need the last element
-  if(els.length == 0) { return; }
-  currentEl = els[0];
-  childNames = currentEl.children.join(',');
-  if(childNames !== "") { childNames += ","; }
-
-  if(!this.$schema.hasOwnProperty(currentEl.name)) { return; }
-  if(!this.$schema[currentEl.name].hasOwnProperty("model")) { return; }
-
-  rexp = new RegExp(this.$schema[currentEl.name].model, "ig");
-  if(rexp.exec(childNames) == null) {
-    parser.validationError(currentEl.name + " is invalid: one or more required children are missing or its child elements are in the wrong order.");
-  }
-};
-
-ValidatorSAX.prototype.validate = function(editor) {
-  var els, parser, me = this;
-  els = [];
-  parser = new SAXParser({
-    startDocument: function() { els = []; },
-    endDocument: function() {
-      if(els.length > 0) {
-        var names = [];
-        for(e in els) {
-          names.push(e.name);
-        }
-        parser.validationError("Unclosed elements at end of document: " + names.join(", "));
-      }
-    },
-    startElement: function(node) {
-      if(els.length > 0) {
-        els[0].children.push(node.local);
-      }
-      els.unshift({name: node.local, children: []});
-      // check against schema
-      me.checkSchema(parser,els);
-    },
-    characters: function(t) {
-      if(els.length > 0) {
-        if(t.match(/^[\s\r\n]*$/) == null) {
-          els[0].children.push('_text_');
-        }
-      }
-    },
-    endElement: function(name) {
-      me.checkChildren(parser,els);
-      els.shift();
-    }
-  });
-  parser.parse(editor);
-  this.$errors = parser.$errors;
-
-  this.displayErrors();
-
-};
+  validate: (editor) ->
+    els = []
+    parser = new Angles.SAXParser
+      startDocument: => els = []
+      endDocument: =>
+        if els.length > 0
+          names = (e.name for e in els)
+          parser.validationError "Unclosed elements at end of document: #{names.join(", ")}"
+      startElement: (node) =>
+        if els.length > 0
+          els[0].children.push node.local
+        els.unshift
+          name: node.local
+          children: []
+        @checkSchema parser, els
+      characters: (t) =>
+        if els.length > 0
+          if t.match(/^[\s\r\n]*$/) == null
+            els[0].children.push '_text_'
+      endElement: (name) =>
+        @checkChildren parser, els
+        els.shift()
+    parser.parse(editor)
+    @$errors = parser.$errors
+    @displayErrors()
