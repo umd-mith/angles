@@ -197,12 +197,21 @@ window.Angles = {}
       @$editor.getSession().on 'change', (e) => @dispatcher.trigger 'editor:change', e
       @$editor.getSession().setMode "ace/mode/xml"
 
+      # Load ace modules #
+
+      # ext_language_tools for autocompletion
+      ace.config.loadModule 'ace/ext/language_tools', () ->
+        _this.$editor.setOptions 
+          enableBasicAutocompletion: true,
+          enableSnippets: true
+
       @$editor.commands.addCommand
         name: 'contextHelp'
         bindKey: 
-          win: 'Ctrl-Space'  
-          mac: 'Ctrl-Space'
+          win: 'Ctrl-.'  
+          mac: 'Ctrl-.'
         exec: (editor) =>
+            console.log editor
             cursor = editor.getCursorPosition()
             line = editor.session.getDocument().getLine(cursor.row)
             sub = line.substring(0, cursor.column)
