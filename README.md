@@ -19,17 +19,28 @@ software through their teaching and research.
 
 ## Development Toolchain
 
-Angles is based on the [Ace Editor](http://ace.ajax.org/) and derives its
-build environment from that used by the Ace development team. This means that
-you need the following installed before you can work on the JavaScript
+The development up to now has been able to extend the Ace Editor without
+requiring modification of the XML mode, so the rest of this section is
+nascent until such time that the XML mode must be modified to support some
+functionality being added to ANGLES.
+
+Angles is based on the [Ace Editor](http://ace.ajax.org/) and uses `grunt`
+to manage its build and testing process. This means that
+you need the following installed before you can work on the CoffeeScript
 source code:
 
-* make
-* node
+* grunt
 
-You also need the following Node package intalled via `npm`:
+You also need the following Node packages intalled via `npm`:
 
-* dryice
+* grunt-contrib-concat
+* grunt-contrib-uglify
+* grunt-contrib-clean
+* grunt-contrib-watch
+* grunt-contrib-watch
+* grunt-contrib-qunit
+* grunt-contrib-connect
+* grunt-contrib-coffee
 
 ## Repository Structure
 
@@ -39,20 +50,28 @@ This repository has the following directories:
 * demo: simple demonstration page incorporating the Angles mode plugin
 * deps: dependencies for the demonstration page, including a build of ace
 * dist: the built plugin ready for distribution
-* lib: the source code of ACE as well as Angles
-    - lib/ace: The source code for ACE used during the build process
-    - lib/angles: The source code for the Angles plugins for ACE
+* src: the source code for non-ACE components that work with the ACE editor
 * test: any unit tests
 
-Development should take place under lib/angles. No changes to files under
-lib/ace will be accepted since those are used only as reference during the
-build process and are not part of the final build product.
+Development should take place in src/.
 
 ## Building the Angles plugins
 
 To build the plugins for ACE, run the following command:
 
-    % make angles
+    % grunt
 
 This will build everything and leave the new files in `dist/`.
+
+
+## Bower and dependencies
+
+Dependencies are a resolved through `bower`. In order to install
+dependencies, run the `install` command:
+
+```
+$ bower install
+```
+
+http://sindresorhus.com/bower-components/
 
