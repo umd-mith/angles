@@ -200,31 +200,126 @@ window.Angles = {}
       # Load ace modules #
 
       # ext_language_tools for autocompletion
-      ace.config.loadModule 'ace/ext/language_tools', () ->
-        _this.$editor.setOptions 
-          enableBasicAutocompletion: true,
-          enableSnippets: true
+      ace.config.loadModule '../ace/ext/angles', () =>
 
-      @$editor.commands.addCommand
-        name: 'contextHelp'
-        bindKey: 
-          win: 'Ctrl-.'  
-          mac: 'Ctrl-.'
-        exec: (editor) =>
-            console.log editor
-            cursor = editor.getCursorPosition()
-            line = editor.session.getDocument().getLine(cursor.row)
-            sub = line.substring(0, cursor.column)
-            elStart = sub.lastIndexOf('<')
+        @$editor.setOptions 
+          enableODDAutocompletion: true
 
-            sub2 = line.substring(elStart, line.length)
+        completer = 
+          getCompletions: (editor, session, pos, prefix, callback) => 
+            if @$context?
+              context = this.$context
 
-            ident = line.match("</?([^ >]+)[^<]+$")[1]
+              _findParent = (row, column) ->
+                openTags = []
+                closedTags = []
+                isOpeningTag = false
+                isClosingTag = false
 
-            @dispatcher.trigger("editor:context", ident)
-        readOnly: false # false if this command should not apply in readOnly mode
+                finalTag = ''
+
+                _scanRow = (row, column) ->            
+                  curColumn = 0
+                  tokens = editor.getSession().getTokens(row)
+
+                  for token in tokens
+                    curColumn += token.value.length;
+                    if curColumn > column
+                      if token.type == "meta.tag.punctuation.begin" and token.value == "<"
+                        isOpeningTag = true
+                      else if token.type == "meta.tag.punctuation.begin" and token.value == "</"
+                        isClosingTag = true
+                      else if token.type == "meta.tag.punctuation.end" and token.value == "/>"
+                        openTags.pop()
+                        isOpeningTag = false
+                        isClosingTag = false
+                      else if token.type == "meta.tag.name" and isOpeningTag
+                        openTags.push(token.value)
+                        isOpeningTag = false
+                      else if token.type == "meta.tag.name" && isClosingTag
+                        closedTags.push(token.value)
+                        isClosingTag = false
+
+                  if closedTags.length == 0 
+                    _scanRow(row+1, 0)
+                  else if closedTags.length == 1 and openTags.length == 0
+                    finalTag = closedTags[closedTags.length-1]
+                  else  
+                    i = openTags.length 
+                    while i--
+                      if closedTags[closedTags.length-1] == openTags[i]
+                        openTags.splice(i)
+                        closedTags.pop()
+                        _scanRow(row+1, 0)
+                      else 
+                        finalTag = closedTags[closedTags.length-1]
+
+                _scanRow(row, column)
+                finalTag
+
+              pos = editor.getCursorPosition()              
+              ident = _findParent(pos.row, pos.column)
+              console.log ident
+              completions = []
+
+              children = context.getChildrenOf(ident);
+
+              for c in children
+                completions.push
+                  # name: c.ident,
+                  # value: "<#{c.ident}></#{c.ident}>",
+                  # score: 0,
+                  caption: c.ident,
+                  snippet: "#{c.ident}></#{c.ident}>",
+                  meta: "element"
+
+              if completions.length > 0
+                callback null, completions
+            else
+              0 #console.log 'Context Help component not loaded'  
+
+        @$editor.completers = [completer]
+
+      # @$editor.commands.addCommand
+      #   name: 'contextHelp'
+      #   bindKey: 
+      #     win: 'Ctrl-Space'  
+      #     mac: 'Ctrl-Space'
+      #   exec: (editor) =>
+      #       cursor = editor.getCursorPosition()
+      #       line = editor.session.getDocument().getLine(cursor.row)
+      #       sub = line.substring(0, cursor.column)
+      #       elStart = sub.lastIndexOf('<')
+
+      #       sub2 = line.substring(elStart, line.length)
+
+      #       ident = line.match("</?([^ >]+)[^<]+$")[1]
+
+      #       @dispatcher.trigger("editor:context", ident)
+      #   readOnly: false # false if this command should not apply in readOnly mode
+
+      # @$editor.commands.addCommand
+      #   name: 'newElement'
+      #   bindKey: 
+      #     win: '<'  
+      #     mac: '<'
+      #   exec: (editor) =>           
+      #       @$editor.commands.exec @$editor.commands.commands.startAutocomplete, @$editor
+      #       editor.getSession().insert editor.getCursorPosition(), '<'
+            
+      #       # console.log @$editor.completers[0].showPopup(@$editor)
+
+      #   readOnly: false 
 
       @
+
+    # addCompletions: (completions) -> 
+    #   completer = 
+    #     getCompletions: (editor, session, pos, prefix, callback) ->  
+    #         console.log pos           
+    #         callback null, completions  
+
+    #   @$editor.completers.push completer
 
     setContent: -> @$editor.setValue @model.get('content')
 
