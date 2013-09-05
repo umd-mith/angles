@@ -283,14 +283,21 @@ Some TEI document here
       }
     });
 
-    var context = new Angles.ContextHelp({
+    // Attach the context helper directly to the view
+    angles.$context = new Angles.ContextHelp({
       dispatcher: angles.dispatcher,
       anglesView: angles,
     });
+
+    // var context = new Angles.ContextHelp({
+    //   dispatcher: angles.dispatcher,
+    //   anglesView: angles,
+    // });
     function teijs(o) { 
-      context.setODD(o);
+      angles.$context.setODD(o);
       angles.dispatcher.on("editor:context", function(i) {
-        desc = context.getDescOf(i);
+        desc = angles.$context.getDescOf(i);
+        children = angles.$context.getChildrenOf(i);
         notification = {
           "type": "desc",
           "info": "Element Description",
