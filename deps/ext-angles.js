@@ -28,7 +28,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/ext/language_tools', ['require', 'exports', 'module' , 'ace/snippets', 'ace/autocomplete', 'ace/config', 'ace/autocomplete/text_completer', 'ace/editor'], function(require, exports, module) {
+define('ace/ext/angles', ['require', 'exports', 'module' , 'ace/snippets', 'ace/autocomplete', 'ace/config', 'ace/autocomplete/text_completer', 'ace/editor'], function(require, exports, module) {
 
 
 var snippetManager = require("../snippets").snippetManager;
@@ -108,6 +108,17 @@ var onChangeMode = function(e, editor) {
 var Editor = require("../editor").Editor;
 require("../config").defineOptions(Editor.prototype, "editor", {
     enableBasicAutocompletion: {
+        set: function(val) {
+            if (val) {
+                this.completers = completers
+                this.commands.addCommand(Autocomplete.startCommand);
+            } else {
+                this.commands.removeCommand(Autocomplete.startCommand);
+            }
+        },
+        value: false
+    },
+    enableODDAutocompletion: {
         set: function(val) {
             if (val) {
                 this.completers = completers
@@ -1112,8 +1123,12 @@ Autocomplete.startCommand = {
             editor.completer = new Autocomplete();
         editor.completer.showPopup(editor);
         editor.completer.cancelContextMenu();
+
+        editor.getSession().insert(editor.getCursorPosition(), '<');
+
     },
-    bindKey: "Ctrl-Space|Ctrl-Shift-Space|Alt-Space"
+    bindKey: "<"
+    //bindKey: "Ctrl-Space|Ctrl-Shift-Space|Alt-Space"
 };
 
 var FilteredList = function(array, mutateData) {
