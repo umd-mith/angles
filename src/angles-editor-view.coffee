@@ -200,10 +200,11 @@ window.Angles = {}
       # Load ace modules #
 
       # ext_language_tools for autocompletion
-      ace.config.loadModule '../ace/ext/angles', () =>
+      ace.config.set("basePath", "../deps/")
+      ace.config.loadModule 'ace/ext/angles', () =>
 
         @$editor.setOptions 
-          enableODDAutocompletion: true
+          enableBasicAutocompletion: true
 
         completer = 
           getCompletions: (editor, session, pos, prefix, callback) => 
