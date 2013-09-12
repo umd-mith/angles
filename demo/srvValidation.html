@@ -11,6 +11,9 @@
     body {
         padding-top: 90px;
     }
+    .notifications {
+      width: 70%;
+    }
     .notifications td {
       border: 1px solid Black;
       padding: 1em;
@@ -147,10 +150,7 @@ Some TEI document here
 <script src="../deps/backbone-min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/FileSaver.min.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/validatorSRV.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/notificationCenter.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script>
+<script src="../dist/angles.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     /*
      * We create a local storage object and tie it into our document 
@@ -187,7 +187,7 @@ Some TEI document here
     /*
     * We set a server validator 
     */
-    var validator = new ValidatorSRV({
+    var validator = new Angles.ValidatorSRV({
       dispatcher: angles.dispatcher,
       anglesView: angles,
       validator: "http://localhost:8080/validate",
@@ -197,7 +197,7 @@ Some TEI document here
     /*
      * Set up the notification center
      */
-    var notificationCenter = new NotificationCenter({
+    var notificationCenter = new Angles.NotificationCenter({
       dispatcher: angles.dispatcher,
       anglesView: angles,
     });
@@ -293,10 +293,39 @@ Some TEI document here
       }
     });
 
+    // Attach the context helper directly to the view
+    angles.$context = new Angles.ContextHelp({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+    });
+
+    // var context = new Angles.ContextHelp({
+    //   dispatcher: angles.dispatcher,
+    //   anglesView: angles,
+    // });
+    function teijs(o) { 
+      angles.$context.setODD(o);
+      angles.dispatcher.on("editor:context", function(i) {
+        desc = angles.$context.getDescOf(i);
+        children = angles.$context.getChildrenOf(i);
+        notification = {
+          "type": "Element Description",
+          "info": i,
+          "message": desc,
+          "resource": "",
+          "location": {"column":0, "row":0}
+        }
+        angles.dispatcher.trigger('notification:clear');
+        notificationCenter.$notifications.add(notification);
+      });
+    }
+
 </script>
 <!-- We load external RNGs using the schemaSrv(s) function above -->
 <script type="text/JavaScript" charset="utf-8">
   schema($('#schema input[checked]').val()); 
 </script>
+<!-- Loading the standard p5 subset for contextual help -->
+<script src="./p5subset.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>
