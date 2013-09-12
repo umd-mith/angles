@@ -84,9 +84,9 @@ window.Angles = {}
   #   .new-file  - element that triggers a new file dialog
   #
   #
-  _.templateSettings =
-    interpolate: /\{\{(.+?)\}\}/g
-    escape: /\{\{-(.+?)\}\}/g
+  # _.templateSettings =
+  #   interpolate: /\{\{(.+?)\}\}/g
+  #   escape: /\{\{-(.+?)\}\}/g
 
   class Angles.FileSelector extends Backbone.View
     template: _.template $('#file-list-template').html()
@@ -130,7 +130,7 @@ window.Angles = {}
       @$("table").append view.render().$el
 
   class Angles.NotificationRow extends Backbone.View
-    template: _.template $('#notification-template tbody').html()
+    template: _.template $('#notification-template').html()
 
     initialize: ->
       @listenTo @model, 'change', @render
