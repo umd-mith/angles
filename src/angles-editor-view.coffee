@@ -127,7 +127,7 @@ window.Angles = {}
     addOne: (model) ->
       view = new Angles.NotificationRow
         model: model
-      @$("table").append view.render().$el
+      @$(".notifications").append view.render().$el
 
   class Angles.NotificationRow extends Backbone.View
     template: _.template $('#notification-template').html()
