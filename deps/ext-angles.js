@@ -28,14 +28,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/ext/angles', ['require', 'exports', 'module' , 'ace/snippets', 'ace/autocomplete', 'ace/config', 'ace/autocomplete/text_completer', 'ace/editor'], function(require, exports, module) {
+define('ext/angles', ['require', 'exports', 'module' , 'ace/snippets', 'ace/autocomplete', 'ace/config', 'ace/autocomplete/text_completer', 'ace/editor'], function(require, exports, module) {
 
 
-var snippetManager = require("../snippets").snippetManager;
-var Autocomplete = require("../autocomplete").Autocomplete;
-var config = require("../config");
+var snippetManager = require("ace/snippets").snippetManager;
+var Autocomplete = require("ace/autocomplete").Autocomplete;
+var config = require("ace/config");
 
-var textCompleter = require("../autocomplete/text_completer");
+var textCompleter = require("ace/autocomplete/text_completer");
 var keyWordCompleter = {
     getCompletions: function(editor, session, pos, prefix, callback) {
         var keywords = session.$mode.$keywordList || [];
@@ -105,8 +105,8 @@ var onChangeMode = function(e, editor) {
     }
 };
 
-var Editor = require("../editor").Editor;
-require("../config").defineOptions(Editor.prototype, "editor", {
+var Editor = require("ace/editor").Editor;
+require("ace/config").defineOptions(Editor.prototype, "editor", {
     enableBasicAutocompletion: {
         set: function(val) {
             if (val) {
@@ -945,6 +945,9 @@ var Autocomplete = function() {
         if (!this.popup)
             this.$init();
 
+        // Get description of first element
+        ace.config._dispatchEvent('desc', {ident: this.completions.filtered[0].caption});
+
         this.popup.setData(this.completions.filtered);
 
         var renderer = editor.renderer;
@@ -1100,7 +1103,7 @@ var Autocomplete = function() {
             this.completions = new FilteredList(matches);
             this.completions.setFilter(results.prefix);
             this.openPopup(this.editor, keepPopupPosition);
-            this.popup.setHighlight(results.prefix);
+            // this.popup.setHighlight(results.prefix);
         }.bind(this));
     };
 
@@ -1128,7 +1131,6 @@ Autocomplete.startCommand = {
 
     },
     bindKey: "<"
-    //bindKey: "Ctrl-Space|Ctrl-Shift-Space|Alt-Space"
 };
 
 var FilteredList = function(array, mutateData) {
@@ -1151,13 +1153,13 @@ exports.FilteredList = FilteredList;
 define('ace/autocomplete/popup', ['require', 'exports', 'module' , 'ace/edit_session', 'ace/virtual_renderer', 'ace/editor', 'ace/range', 'ace/lib/event', 'ace/lib/lang', 'ace/lib/dom'], function(require, exports, module) {
 
 
-var EditSession = require("../edit_session").EditSession;
-var Renderer = require("../virtual_renderer").VirtualRenderer;
-var Editor = require("../editor").Editor;
-var Range = require("../range").Range;
-var event = require("../lib/event");
-var lang = require("../lib/lang");
-var dom = require("../lib/dom");
+var EditSession = require("ace/edit_session").EditSession;
+var Renderer = require("ace/virtual_renderer").VirtualRenderer;
+var Editor = require("ace/editor").Editor;
+var Range = require("ace/range").Range;
+var event = require("ace/lib/event");
+var lang = require("ace/lib/lang");
+var dom = require("ace/lib/dom");
 
 var $singleLineEditor = function(el) {
     var renderer = new Renderer(el);
@@ -1270,7 +1272,7 @@ var AcePopup = function(parentNode) {
     popup.getData = function(row) {
         return popup.data[row];
     };
-	
+
 	popup.getRow = function() {
         var line = this.getCursorPosition().row;
         if (line == 0 && !this.getHighlightActiveLine())
@@ -1281,6 +1283,7 @@ var AcePopup = function(parentNode) {
         popup.setHighlightActiveLine(line != -1);
         popup.selection.clearSelection();
         popup.moveCursorTo(line, 0 || 0);
+        ace.config._dispatchEvent('desc', {ident: popup.getData(line).caption});
     };
 
     popup.setHighlight = function(re) {
@@ -1291,6 +1294,7 @@ var AcePopup = function(parentNode) {
     popup.hide = function() {
         this.container.style.display = "none";
         this._signal("hide");
+        ace.config._signal("desc:clear");
     };
     popup.show = function(pos, lineHeight) {
         var el = this.container;
