@@ -132,11 +132,6 @@ Some TEI document here
 <script src="../deps/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/FileSaver.min.js" type="text/javascript" charset="utf-8"></script>
-<!-- script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/validatorSAX.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/notificationCenter.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/contextHelp.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script -->
 <script src="../dist/angles.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     /*
@@ -299,11 +294,11 @@ Some TEI document here
         desc = angles.$context.getDescOf(i);
         children = angles.$context.getChildrenOf(i);
         notification = {
-          "type": "desc",
-          "info": "Element Description",
+          "type": "Element Description",
+          "info": i,
           "message": desc,
           "resource": "",
-          "location": {"column":-1, "row":-1}
+          "location": {"column":0, "row":0}
         }
         angles.dispatcher.trigger('notification:clear');
         notificationCenter.$notifications.add(notification);
