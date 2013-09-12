@@ -32,11 +32,11 @@ class Angles.ValidatorSRV extends Angles.Validator
         thrownError = if xhr.status == 0 then "Cannot reach server" else thrownError
         n =
           type: "Server"
-          info: xhr.status
+          info: "Status: " + xhr.status
           message: thrownError
           location:
-            row: 0
-            column: 0
+            row: -1
+            column: -1
         @dispatcher.trigger 'notification:push', n
 
   # Override this, or provide your own validation handler if your validator returns a different response
