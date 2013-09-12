@@ -200,11 +200,11 @@ window.Angles = {}
       # Load ace modules #
 
       # ext_language_tools for autocompletion
-      ace.config.set("basePath", "../deps/")
-      ace.config.loadModule 'ace/ext/angles', () =>
+      ace.config.set("basePath", "../deps/")      
+      ace.config.loadModule 'ext/angles', () =>
 
-        @$editor.setOptions 
-          enableBasicAutocompletion: true
+        @$editor.setOptions
+          enableODDAutocompletion: true
 
         completer = 
           getCompletions: (editor, session, pos, prefix, callback) => 
@@ -260,7 +260,6 @@ window.Angles = {}
 
               pos = editor.getCursorPosition()              
               ident = _findParent(pos.row, pos.column)
-              console.log ident
               completions = []
 
               children = context.getChildrenOf(ident);
@@ -281,46 +280,13 @@ window.Angles = {}
 
         @$editor.completers = [completer]
 
-      # @$editor.commands.addCommand
-      #   name: 'contextHelp'
-      #   bindKey: 
-      #     win: 'Ctrl-Space'  
-      #     mac: 'Ctrl-Space'
-      #   exec: (editor) =>
-      #       cursor = editor.getCursorPosition()
-      #       line = editor.session.getDocument().getLine(cursor.row)
-      #       sub = line.substring(0, cursor.column)
-      #       elStart = sub.lastIndexOf('<')
+        ace.config.on "desc", (e) =>
+          @dispatcher.trigger("editor:context", e.ident)
 
-      #       sub2 = line.substring(elStart, line.length)
-
-      #       ident = line.match("</?([^ >]+)[^<]+$")[1]
-
-      #       @dispatcher.trigger("editor:context", ident)
-      #   readOnly: false # false if this command should not apply in readOnly mode
-
-      # @$editor.commands.addCommand
-      #   name: 'newElement'
-      #   bindKey: 
-      #     win: '<'  
-      #     mac: '<'
-      #   exec: (editor) =>           
-      #       @$editor.commands.exec @$editor.commands.commands.startAutocomplete, @$editor
-      #       editor.getSession().insert editor.getCursorPosition(), '<'
-            
-      #       # console.log @$editor.completers[0].showPopup(@$editor)
-
-      #   readOnly: false 
+        ace.config.on "desc:clear", (e) =>
+          @dispatcher.trigger 'notification:clear'
 
       @
-
-    # addCompletions: (completions) -> 
-    #   completer = 
-    #     getCompletions: (editor, session, pos, prefix, callback) ->  
-    #         console.log pos           
-    #         callback null, completions  
-
-    #   @$editor.completers.push completer
 
     setContent: -> @$editor.setValue @model.get('content')
 
