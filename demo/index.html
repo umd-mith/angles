@@ -11,12 +11,8 @@
     body {
         padding-top: 90px;
     }
-    .notifications {
-      width: 70%;
-    }
-    .notifications td {
-      border: 1px solid Black;
-      padding: 1em;
+    #notifications_area {
+      margin-top: 1em;
     }
     #status_icon {
       float:right; 
@@ -25,6 +21,10 @@
       background-color: #4CC423;
       border: 1px Solid Black;
     }
+    .btn-group {
+      margin-bottom: 1em;
+    }
+    .table { margin-bottom: 0; }
 </style>
 </head>
 <body>
@@ -107,11 +107,11 @@ Some TEI document here
   </label>
 </script>
 <script type="text/template" id="notification-list-template">
-  <table class="notifications">
-  </table>
+  <div class="notifications">
+  </div>
 </script>
 <script type="text/template" id="notification-template">
-<table><tbody>
+<table class="table table-bordered table-striped"><tbody>
   <tr>
     <td><%= type %></td>
     <td><%= info %></td>

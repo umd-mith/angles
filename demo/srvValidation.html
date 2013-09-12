@@ -11,12 +11,8 @@
     body {
         padding-top: 90px;
     }
-    .notifications {
-      width: 70%;
-    }
-    .notifications td {
-      border: 1px solid Black;
-      padding: 1em;
+    #notifications_area {
+      margin-top: 1em;
     }
     #status_icon {
       float:right; 
@@ -25,6 +21,10 @@
       background-color: #4CC423;
       border: 1px Solid Black;
     }
+    .btn-group {
+      margin-bottom: 1em;
+    }
+    .table { margin-bottom: 0; }
 </style>
 </head>
 <body>
@@ -44,25 +44,29 @@
             </div>
         </div>
 
-    <div class="span">
-        <form id="schema">
-          <fieldset>
-            <legend>Validate with</legend>
-            <input type="radio" name="selSchema" id="TEI_lite" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_lite.rng" checked/><label for="TEI_lite">TEI Lite (default)</label>
-            <input type="radio" name="selSchema" id="TEI_tite" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_tite.rng"/><label for="TEI_Tite">TEI Tite</label>
-            <input type="radio" name="selSchema" id="TEI_bare" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_bare.rng"/><label for="TEI_bare">TEI Bare</label>
-            <input type="radio" name="selSchema" id="TEI_corpus" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_corpus.rng"/><label for="TEI_corpus">TEI Corpus</label>
-            <input type="radio" name="selSchema" id="TEI_MS" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_ms.rng"/><label for="TEI_MS">TEI MS Desc</label>
-            <input type="radio" name="selSchema" id="TEI_drama" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_drama.rng"/><label for="TEI_drama">TEI Drama</label>
-            <input type="radio" name="selSchema" id="TEI_speech" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_speech.rng"/><label for="TEI_speech">TEI Speech</label>
-            <input type="radio" name="selSchema" id="TEI_odds" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_odds.rng"/><label for="TEI_odds">TEI ODD</label>
-            <input type="radio" name="selSchema" id="TEI_all" value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng"/><label for="TEI_all">TEI All</label>
-            <input type="radio" name="selSchema" id="TEI_all" value="https://raw.github.com/TEI-Music-SIG/tei-mei/master/schemata/tei-lite_mei-cmn.rng"/><label for="TEI_all">TEI Lite + MEI CMN</label>            
-          </fieldset>
-        </form>
-    </div>
+    
 
     <div class="container">
+      <div class="well">Validate with:
+        <div class="btn-group" data-toggle="buttons-radio" id="schema">
+          <button type="button" class="btn active"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_lite.rng">TEI Lite</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_tite.rng">TEI Lite</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_bare.rng">TEI Bare</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_ms.rng">TEI MS Desc</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_drama.rng">TEI Drama</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_odds.rng">TEI ODD</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng">TEI All</button>
+          <button type="button" class="btn"
+          value="https://raw.github.com/TEI-Music-SIG/tei-mei/master/schemata/tei-lite_mei-cmn.rng">TEI Lite + MEI CMN</button>
+        </div>
+      </div>
 
         <div class="row">
             <div class="span9">
@@ -81,7 +85,7 @@ Some TEI document here
   </ul>
 </div>            
 </div>
-<div class="row" id="notifications_area"></div>
+<div class="well" id="notifications_area"></div>
 </div>
 <div id="saveModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-header">
@@ -126,11 +130,11 @@ Some TEI document here
   </label>
 </script>
 <script type="text/template" id="notification-list-template">
-  <table class="notifications">
-  </table>
+  <div class="notifications">
+  </div>
 </script>
 <script type="text/template" id="notification-template">
-<table><tbody>
+<table class="table table-bordered table-striped"><tbody>
   <tr>
     <td><%= type %></td>
     <td><%= info %></td>
@@ -179,8 +183,10 @@ Some TEI document here
       angles.dispatcher.trigger("validation"); 
     });
 
-    $("input[name='selSchema']").change(function(){      
-      schema($(this).val()); 
+    $("body").find("#schema .btn").each(function(){
+      $(this).bind('click', function(){
+        schema($(this).attr("value")); 
+      });
     });
 
     /*
@@ -189,7 +195,7 @@ Some TEI document here
     var validator = new Angles.ValidatorSRV({
       dispatcher: angles.dispatcher,
       anglesView: angles,
-      validator: "http://localhost:8080/validate",
+      validator: "http://localhost:8081/validate",
     });  
     function schema(s){ validator.setSchema(s); }
 
@@ -322,7 +328,7 @@ Some TEI document here
 </script>
 <!-- We load external RNGs using the schemaSrv(s) function above -->
 <script type="text/JavaScript" charset="utf-8">
-  schema($('#schema input[checked]').val()); 
+  schema($('#schema .active').attr("value")); 
 </script>
 <!-- Loading the standard p5 subset for contextual help -->
 <script src="./p5subset.js" type="text/javascript" charset="utf-8"></script>
