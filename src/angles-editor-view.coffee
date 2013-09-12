@@ -84,9 +84,9 @@ window.Angles = {}
   #   .new-file  - element that triggers a new file dialog
   #
   #
-  _.templateSettings =
-    interpolate: /\{\{(.+?)\}\}/g
-    escape: /\{\{-(.+?)\}\}/g
+  # _.templateSettings =
+  #   interpolate: /\{\{(.+?)\}\}/g
+  #   escape: /\{\{-(.+?)\}\}/g
 
   class Angles.FileSelector extends Backbone.View
     template: _.template $('#file-list-template').html()
@@ -127,10 +127,10 @@ window.Angles = {}
     addOne: (model) ->
       view = new Angles.NotificationRow
         model: model
-      @$("table").append view.render().$el
+      @$(".notifications").append view.render().$el
 
   class Angles.NotificationRow extends Backbone.View
-    template: _.template $('#notification-template tbody').html()
+    template: _.template $('#notification-template').html()
 
     initialize: ->
       @listenTo @model, 'change', @render
@@ -197,23 +197,94 @@ window.Angles = {}
       @$editor.getSession().on 'change', (e) => @dispatcher.trigger 'editor:change', e
       @$editor.getSession().setMode "ace/mode/xml"
 
-      @$editor.commands.addCommand
-        name: 'contextHelp'
-        bindKey: 
-          win: 'Ctrl-Space'  
-          mac: 'Ctrl-Space'
-        exec: (editor) =>
-            cursor = editor.getCursorPosition()
-            line = editor.session.getDocument().getLine(cursor.row)
-            sub = line.substring(0, cursor.column)
-            elStart = sub.lastIndexOf('<')
+      # Load ace modules #
 
-            sub2 = line.substring(elStart, line.length)
+      # ext_language_tools for autocompletion
+      ace.config.set("basePath", "../deps/")      
+      ace.config.loadModule 'ext/angles', () =>
 
-            ident = line.match("</?([^ >]+)[^<]+$")[1]
+        @$editor.setOptions
+          enableODDAutocompletion: true
 
-            @dispatcher.trigger("editor:context", ident)
-        readOnly: false # false if this command should not apply in readOnly mode
+        completer = 
+          getCompletions: (editor, session, pos, prefix, callback) => 
+            if @$context?
+              context = this.$context
+
+              _findParent = (row, column) ->
+                openTags = []
+                closedTags = []
+                isOpeningTag = false
+                isClosingTag = false
+
+                finalTag = ''
+
+                _scanRow = (row, column) ->            
+                  curColumn = 0
+                  tokens = editor.getSession().getTokens(row)
+
+                  for token in tokens
+                    curColumn += token.value.length;
+                    if curColumn > column
+                      if token.type == "meta.tag.punctuation.begin" and token.value == "<"
+                        isOpeningTag = true
+                      else if token.type == "meta.tag.punctuation.begin" and token.value == "</"
+                        isClosingTag = true
+                      else if token.type == "meta.tag.punctuation.end" and token.value == "/>"
+                        openTags.pop()
+                        isOpeningTag = false
+                        isClosingTag = false
+                      else if token.type == "meta.tag.name" and isOpeningTag
+                        openTags.push(token.value)
+                        isOpeningTag = false
+                      else if token.type == "meta.tag.name" && isClosingTag
+                        closedTags.push(token.value)
+                        isClosingTag = false
+
+                  if closedTags.length == 0 
+                    _scanRow(row+1, 0)
+                  else if closedTags.length == 1 and openTags.length == 0
+                    finalTag = closedTags[closedTags.length-1]
+                  else  
+                    i = openTags.length 
+                    while i--
+                      if closedTags[closedTags.length-1] == openTags[i]
+                        openTags.splice(i)
+                        closedTags.pop()
+                        _scanRow(row+1, 0)
+                      else 
+                        finalTag = closedTags[closedTags.length-1]
+
+                _scanRow(row, column)
+                finalTag
+
+              pos = editor.getCursorPosition()              
+              ident = _findParent(pos.row, pos.column)
+              completions = []
+
+              children = context.getChildrenOf(ident);
+
+              for c in children
+                completions.push
+                  # name: c.ident,
+                  # value: "<#{c.ident}></#{c.ident}>",
+                  # score: 0,
+                  caption: c.ident,
+                  snippet: "#{c.ident}></#{c.ident}>",
+                  meta: "element"
+
+              if completions.length > 0
+                callback null, completions
+            else
+              0 #console.log 'Context Help component not loaded'  
+
+        @$editor.completers = [completer]
+
+        ace.config.on "desc", (e) =>
+          @dispatcher.trigger("editor:context", e.ident)
+
+        ace.config.on "desc:clear", (e) =>
+          @dispatcher.trigger 'notification:clear'
 
       @
 
