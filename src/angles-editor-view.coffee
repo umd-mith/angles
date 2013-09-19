@@ -199,7 +199,6 @@ window.Angles = {}
 
       # Load ace modules #
 
-      # ext_language_tools for autocompletion
       ace.config.set("basePath", "../deps/")      
       ace.config.loadModule 'ext/angles', () =>
 
@@ -266,9 +265,6 @@ window.Angles = {}
 
               for c in children
                 completions.push
-                  # name: c.ident,
-                  # value: "<#{c.ident}></#{c.ident}>",
-                  # score: 0,
                   caption: c.ident,
                   snippet: "#{c.ident}></#{c.ident}>",
                   meta: "element"
@@ -311,7 +307,5 @@ window.Angles = {}
     clearAnnotations: -> @$editor.session.clearAnnotations()
 
     setMode: (m) -> @$editor.getSession().setMode(m)
-
-    # clearNotifications: function() { this.$editor.session.notifications = null; },
 
 )(window.Angles,_,Backbone,ace)
