@@ -199,7 +199,6 @@ window.Angles = {}
 
       # Load ace modules #
 
-      # ext_language_tools for autocompletion
       ace.config.set("basePath", "../deps/")      
       ace.config.loadModule 'ext/angles', () =>
 
@@ -264,13 +263,16 @@ window.Angles = {}
 
               children = context.getChildrenOf(ident);
 
-              for c in children
+              if children?
+                for c in children
+                  completions.push
+                    caption: c.ident,
+                    snippet: "#{c.ident}></#{c.ident}>",
+                    meta: "element"
+              else
                 completions.push
-                  # name: c.ident,
-                  # value: "<#{c.ident}></#{c.ident}>",
-                  # score: 0,
-                  caption: c.ident,
-                  snippet: "#{c.ident}></#{c.ident}>",
+                  caption: "unknown parent"
+                  snippet: ""
                   meta: "element"
 
               if completions.length > 0
@@ -311,7 +313,5 @@ window.Angles = {}
     clearAnnotations: -> @$editor.session.clearAnnotations()
 
     setMode: (m) -> @$editor.getSession().setMode(m)
-
-    # clearNotifications: function() { this.$editor.session.notifications = null; },
 
 )(window.Angles,_,Backbone,ace)
