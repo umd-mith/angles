@@ -114,7 +114,9 @@ class Angles.ValidatorSAX extends Angles.Validator
     currentEl = els[0].name
     parentEl = els[1].name
 
-    if currentEl not in @$schema[parentEl]?.children
+    if not @$schema[parentEl]?
+      parser.validationError "The #{currentEl} element is not allowed as a child of the #{parentEl} element."
+    else if currentEl not in @$schema[parentEl]?.children
       parser.validationError "The #{currentEl} element is not allowed as a child of the #{parentEl} element."
       return
 
