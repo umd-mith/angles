@@ -4,6 +4,7 @@ class Angles.FileUploader
   constructor: (options) ->
     dispatcher = @dispatcher = options.dispatcher
     @$angles = options.anglesView
+    @storedFiles = options.storedFiles
 
   _handleFileSelect: (evt) =>
     file = evt.target.files[0]
@@ -12,14 +13,18 @@ class Angles.FileUploader
 
     reader.onload = (e) => 
 
-        @$angles.$editor.setValue e.target.result
-
-        #Save new document on Local Storage
-        newModel = collection.create
-          name: file.name,
-          content: @$angles.getContent()
+        same_name =  @storedFiles.find (model) -> 
+          return model.get('name') == file.name
         
-        @$angles.dispatcher.trigger "document:switch", newModel
+        # Overwrite if already in Local Storage
+        if same_name?
+          same_name.destroy()
+
+        # Save new document on Local Storage
+        newModel = @storedFiles.create
+          name: file.name,
+          content: e.target.result
+        @dispatcher.trigger "document:switch", newModel          
 
     reader.readAsText(file,"UTF-8")    
   

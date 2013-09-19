@@ -40,7 +40,6 @@
             <div class="navbar-inner">
                 <ul class="nav">
                     <li><a href="#" id="validateAction">Validate</a></li>
-                    <li><a href="#">Login</a></li>
                 </ul>
             </div>
         </div>
@@ -128,7 +127,6 @@ Some TEI document here
   </tr>
 </tbody></table>
 </script>
-<!--script src="js/jquery.js" type="text/javascript" charset="utf-8"></script-->
 <script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>    
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>    
@@ -281,9 +279,14 @@ Some TEI document here
     uploader = new Angles.FileUploader({
       dispatcher: angles.dispatcher,
       anglesView: angles,
+      storedFiles: collection 
     });
     uploader.bind('.fileupload');
 
+    /* 
+     * Here we use the notification center
+     * for dispatching validation errors and element descriptions from the context help
+     */
     notifications = new Angles.NotificationTable({collection: notificationCenter.$notifications});
     notifications.render().$el.appendTo($('#notifications_area'));
 
