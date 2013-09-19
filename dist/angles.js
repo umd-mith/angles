@@ -313,11 +313,19 @@
                 ident = _findParent(pos.row, pos.column);
                 completions = [];
                 children = context.getChildrenOf(ident);
-                for (_i = 0, _len = children.length; _i < _len; _i++) {
-                  c = children[_i];
+                if (children != null) {
+                  for (_i = 0, _len = children.length; _i < _len; _i++) {
+                    c = children[_i];
+                    completions.push({
+                      caption: c.ident,
+                      snippet: "" + c.ident + "></" + c.ident + ">",
+                      meta: "element"
+                    });
+                  }
+                } else {
                   completions.push({
-                    caption: c.ident,
-                    snippet: "" + c.ident + "></" + c.ident + ">",
+                    caption: "unknown parent",
+                    snippet: "",
                     meta: "element"
                   });
                 }
@@ -446,6 +454,7 @@
       var dispatcher;
       dispatcher = this.dispatcher = options.dispatcher;
       this.$angles = options.anglesView;
+      this.storedFiles = options.storedFiles;
     }
 
     FileUploader.prototype._handleFileSelect = function(evt) {
@@ -454,13 +463,18 @@
       file = evt.target.files[0];
       reader = new FileReader();
       reader.onload = function(e) {
-        var newModel;
-        _this.$angles.$editor.setValue(e.target.result);
-        newModel = collection.create({
-          name: file.name,
-          content: _this.$angles.getContent()
+        var newModel, same_name;
+        same_name = _this.storedFiles.find(function(model) {
+          return model.get('name') === file.name;
         });
-        return _this.$angles.dispatcher.trigger("document:switch", newModel);
+        if (same_name != null) {
+          same_name.destroy();
+        }
+        newModel = _this.storedFiles.create({
+          name: file.name,
+          content: e.target.result
+        });
+        return _this.dispatcher.trigger("document:switch", newModel);
       };
       return reader.readAsText(file, "UTF-8");
     };
