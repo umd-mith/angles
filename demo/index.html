@@ -3,6 +3,7 @@
 <head>
 <title>Angles Editor Demo</title>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/jasny-bootstrap.min.css">
 <style type="text/css" media="screen">
     #editor { 
         position: relative !important;
@@ -60,6 +61,11 @@ Some TEI document here
     <li><a href="#loadModal" role="button" class="btn" data-toggle="modal">Load File</a></li>
     <li><a id="downloadFile" role="button" class="btn">Download File</a></li>
   </ul>
+  <div class="fileupload fileupload-new" data-provides="fileupload">
+    <span class="btn btn-file"><span class="fileupload-new">Load from Disk</span><span class="fileupload-exists">Change</span><input type="file" /></span>
+    <span class="fileupload-preview"></span>
+    <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">x</a>
+  </div>
 </div>            
 </div>
 <div class="row" id="notifications_area"></div>
@@ -126,6 +132,7 @@ Some TEI document here
 <script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>    
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>    
+<script src="js/jasny-bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/underscore-min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/backbone-min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
@@ -268,6 +275,15 @@ Some TEI document here
       $("#loadModal").modal('hide');
     });
 
+    /*
+     * Here we hook the file loader input with the FileUploader class
+     */
+    uploader = new Angles.FileUploader({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+    });
+    uploader.bind('.fileupload');
+
     notifications = new Angles.NotificationTable({collection: notificationCenter.$notifications});
     notifications.render().$el.appendTo($('#notifications_area'));
 
@@ -283,10 +299,6 @@ Some TEI document here
       anglesView: angles,
     });
 
-    // var context = new Angles.ContextHelp({
-    //   dispatcher: angles.dispatcher,
-    //   anglesView: angles,
-    // });
     function teijs(o) { 
       angles.$context.setODD(o);
       angles.dispatcher.on("editor:context", function(i) {
