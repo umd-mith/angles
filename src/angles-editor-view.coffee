@@ -263,10 +263,16 @@ window.Angles = {}
 
               children = context.getChildrenOf(ident);
 
-              for c in children
+              if children?
+                for c in children
+                  completions.push
+                    caption: c.ident,
+                    snippet: "#{c.ident}></#{c.ident}>",
+                    meta: "element"
+              else
                 completions.push
-                  caption: c.ident,
-                  snippet: "#{c.ident}></#{c.ident}>",
+                  caption: "unknown parent"
+                  snippet: ""
                   meta: "element"
 
               if completions.length > 0
