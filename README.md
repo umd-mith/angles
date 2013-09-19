@@ -12,10 +12,22 @@ humanities centers who have greater resources to program scholarly
 software and the scholars who form the core user community for such 
 software through their teaching and research.
 
-## Documentation
+## Using Angles in your Project
 
-* [Ace API Reference](http://ace.ajax.org/#nav=api)
-* [Sprint Planning](https://github.com/umd-mith/angles/wiki/Sprint-Planning)
+Refer to the demos for examples to set up the various components. Here is what you'll need for a minimal installation:
+
+### The main plugin 
+ `dist/angles.js`
+
+###Dependencies 
+Find them under `deps` or download your own:
+
+ * [ACE editor](https://github.com/ajaxorg/ace)
+ * [underscore.js](http://underscorejs.org/)
+ * [backbone.js](http://backbonejs.org/)
+ * ACE Angles extension (`deps/ext-angles.js`) (optional for contextual help)
+ * [backbone.localstorage](https://github.com/jeromegn/Backbone.localStorage) (optional for save/load component)
+ * [FileSaver](https://github.com/eligrey/FileSaver.js) (optional for saving file to disk)
 
 ## Development Toolchain
 
@@ -48,7 +60,7 @@ This repository has the following directories:
 
 * build\_support: scripts used during the build process
 * demo: simple demonstration page incorporating the Angles mode plugin
-* deps: dependencies for the demonstration page, including a build of ace
+* deps: dependencies for Angles, including a build of ace
 * dist: the built plugin ready for distribution
 * src: the source code for non-ACE components that work with the ACE editor
 * test: any unit tests
