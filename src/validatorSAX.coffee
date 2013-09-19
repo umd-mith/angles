@@ -108,7 +108,7 @@ class Angles.ValidatorSAX extends Angles.Validator
       else
         rexp = new RegExp @$schema._start, "ig"
         if rexp.exec(els[0].name+",") == null
-          parser.validationError "Invalud root element: " + els[0].name + "."
+          parser.validationError "Invalid root element: " + els[0].name + "."
       return
 
     currentEl = els[0].name
