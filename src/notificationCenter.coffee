@@ -14,9 +14,7 @@ class Angles.NotificationCenter
     dispatcher.on "notification:clear", (e) => @clear()
 
   push: (m) ->
-    n = new Angles.Notification()
-    n.set m
-    @$notifications.add n
+    @$notifications.add m
 
   clear: -> 
     m.destroy() while m = @$notifications.first()
