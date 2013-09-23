@@ -108,13 +108,15 @@ class Angles.ValidatorSAX extends Angles.Validator
       else
         rexp = new RegExp @$schema._start, "ig"
         if rexp.exec(els[0].name+",") == null
-          parser.validationError "Invalud root element: " + els[0].name + "."
+          parser.validationError "Invalid root element: " + els[0].name + "."
       return
 
     currentEl = els[0].name
     parentEl = els[1].name
 
-    if currentEl not in @$schema[parentEl]?.children
+    if not @$schema[parentEl]?
+      parser.validationError "The #{currentEl} element is not allowed as a child of the #{parentEl} element."
+    else if currentEl not in @$schema[parentEl]?.children
       parser.validationError "The #{currentEl} element is not allowed as a child of the #{parentEl} element."
       return
 

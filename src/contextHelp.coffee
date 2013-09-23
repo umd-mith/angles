@@ -17,4 +17,5 @@ class Angles.ContextHelp
 
   getDescOf: (e) -> @getODDfor(e)?.desc
 
-  getValidChildrenOf: (e) -> @getODDfor(e)?.desc
+  getChildrenOf: (e) -> 
+    @getODDfor(e)?.children

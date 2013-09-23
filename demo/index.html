@@ -3,6 +3,7 @@
 <head>
 <title>Angles Editor Demo</title>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/jasny-bootstrap.min.css">
 <style type="text/css" media="screen">
     #editor { 
         position: relative !important;
@@ -11,12 +12,8 @@
     body {
         padding-top: 90px;
     }
-    .notifications {
-      width: 70%;
-    }
-    .notifications td {
-      border: 1px solid Black;
-      padding: 1em;
+    #notifications_area {
+      margin-top: 1em;
     }
     #status_icon {
       float:right; 
@@ -25,6 +22,10 @@
       background-color: #4CC423;
       border: 1px Solid Black;
     }
+    .btn-group {
+      margin-bottom: 1em;
+    }
+    .table { margin-bottom: 0; }
 </style>
 </head>
 <body>
@@ -39,7 +40,6 @@
             <div class="navbar-inner">
                 <ul class="nav">
                     <li><a href="#" id="validateAction">Validate</a></li>
-                    <li><a href="#">Login</a></li>
                 </ul>
             </div>
         </div>
@@ -60,6 +60,11 @@ Some TEI document here
     <li><a href="#loadModal" role="button" class="btn" data-toggle="modal">Load File</a></li>
     <li><a id="downloadFile" role="button" class="btn">Download File</a></li>
   </ul>
+  <div class="fileupload fileupload-new" data-provides="fileupload">
+    <span class="btn btn-file"><span class="fileupload-new">Load from Disk</span><span class="fileupload-exists">Change</span><input type="file" /></span>
+    <span class="fileupload-preview"></span>
+    <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">x</a>
+  </div>
 </div>            
 </div>
 <div class="row" id="notifications_area"></div>
@@ -97,46 +102,40 @@ Some TEI document here
   </div>
 </div>
 
-<div style="display: none;">
-  <div id="file-list-template">
-    <form class="file-list">
-    </form>
+<script type="text/template" id="file-list-template">
+  <form class="file-list">
+  </form>
+</script>
+<script type="text/template" id="file-item-template">
+  <label class="checkbox">
+    <input type="radio" name="file" value="<%= id %>"> <%= name %> 
+  </label>
+</script>
+<script type="text/template" id="notification-list-template">
+  <div class="notifications">
   </div>
-  <div id="file-item-template">
-    <label class="checkbox">
-      <input type="radio" name="file" value="{{ id }}"> {{- name }} 
-    </label>
-  </div>
-  <div id="notification-list-template">
-    <table class="notifications">
-    </table>
-  </div>
-  <div id="notification-template">
-  <table><tbody>
-    <tr>
-      <td>{{- type }}</td>
-      <td>{{- info }}</td>
-      <td>{{- message }}</td>
-      
-      <td>{{- location.row }}:{{- location.column }}</td>
-    </tr>
-  </tbody></table>
-  </div>
-</div>
-<!--script src="js/jquery.js" type="text/javascript" charset="utf-8"></script-->
+</script>
+<script type="text/template" id="notification-template">
+<table class="table table-bordered table-striped"><tbody>
+  <tr>
+    <td><%= type %></td>
+    <td><%= info %></td>
+    <td><%= message %></td>
+    <% if (location.row >= 0) { %>
+      <td><%= location.row %>:<%= location.column %></td>
+    <% } %>
+  </tr>
+</tbody></table>
+</script>
 <script src="../deps/ace/ace.js" type="text/javascript" charset="utf-8"></script>    
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>    
+<script src="js/jasny-bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/underscore-min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/backbone-min.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/sax.js" type="text/javascript" charset="utf-8"></script>
 <script src="../deps/FileSaver.min.js" type="text/javascript" charset="utf-8"></script>
-<!-- script src="../src/validator.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/validatorSAX.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/notificationCenter.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/contextHelp.js" type="text/javascript" charset="utf-8"></script>
-<script src="../src/angles-editor-view.js" type="text/javascript" charset="utf-8"></script -->
 <script src="../dist/angles.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     /*
@@ -274,6 +273,20 @@ Some TEI document here
       $("#loadModal").modal('hide');
     });
 
+    /*
+     * Here we hook the file loader input with the FileUploader class
+     */
+    uploader = new Angles.FileUploader({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+      storedFiles: collection 
+    });
+    uploader.bind('.fileupload');
+
+    /* 
+     * Here we use the notification center
+     * for dispatching validation errors and element descriptions from the context help
+     */
     notifications = new Angles.NotificationTable({collection: notificationCenter.$notifications});
     notifications.render().$el.appendTo($('#notifications_area'));
 
@@ -283,17 +296,20 @@ Some TEI document here
       }
     });
 
-    var context = new Angles.ContextHelp({
+    // Attach the context helper directly to the view
+    angles.$context = new Angles.ContextHelp({
       dispatcher: angles.dispatcher,
       anglesView: angles,
     });
+
     function teijs(o) { 
-      context.setODD(o);
+      angles.$context.setODD(o);
       angles.dispatcher.on("editor:context", function(i) {
-        desc = context.getDescOf(i);
+        desc = angles.$context.getDescOf(i);
+        children = angles.$context.getChildrenOf(i);
         notification = {
-          "type": "desc",
-          "info": "Element Description",
+          "type": "Element Description",
+          "info": i,
           "message": desc,
           "resource": "",
           "location": {"column":-1, "row":-1}
