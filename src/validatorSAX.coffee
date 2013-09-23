@@ -60,7 +60,7 @@ class Angles.SAXParser
         parser.onstart = ->
 
       @$parser = parser
-      @$errors = [] 
+      @$errors = []
 
   parse: (doc) ->
     @reset()

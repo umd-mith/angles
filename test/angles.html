@@ -7,15 +7,22 @@
   <!-- Load local QUnit. -->
 
   <script src="../app/bower_components/jquery/jquery.js"></script>
-  <script src="../app/bower_components/ace/build/src-noconflict/ace.js"></script>
+  <script src="../app/bower_components/ace/build/src/ace.js"></script>
   <script src="../app/bower_components/underscore/underscore.js"></script>
   <script src="../app/bower_components/backbone/backbone.js"></script>
+  <script src="../deps/sax.js"></script>
 
 
-  <link rel="stylesheet" href="../app/bower_components/qunit/qunit.css" media="screen">
-  <script src="../app/bower_components/qunit/qunit.js"></script>
+  <link rel="stylesheet" href="../app/bower_components/qunit/qunit/qunit.css" media="screen">
+  <script src="../app/bower_components/qunit/qunit/qunit.js"></script>
   <!-- Load local lib and tests. -->
-  <script src="../src/angles-editor-view.js"></script>
+  <script src="../dist/angles.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    function schema(s){ window.testSchema = s; }
+    function teijs(o) { window.testODD = o; }
+  </script>
+  <script src="../resources/rng.js"></script>
+  <script src="../resources/p5subset.js"></script>
   <script src="angles_test.js"></script>
   <!-- Removing access to jQuery and $. But it'll still be available as _$, if
        you REALLY want to mess around with jQuery in the console. REMEMBER WE
@@ -29,6 +36,9 @@
     <span>normal test markup</span>
     <span>awesome test markup</span>
   </div>
+  <div id="ace-editor" style="height: 300px; width: 400px; display: none;"><!--
+    comment as content
+  --></div>
 </body>
 </html>
 
