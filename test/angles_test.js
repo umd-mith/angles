@@ -280,7 +280,7 @@ throws(block, [expected], [message])
 
     equal(noteCenter.$notifications.length, 0, "No notifications");
 
-    noteCenter.push({})
+    noteCenter.push({});
 
     equal(noteCenter.$notifications.length, 1, "One notification now");
 
@@ -301,15 +301,6 @@ throws(block, [expected], [message])
  
     ok(typeof window.testODD !== "undefined" && window.testODD !== null, "Test ODD file loaded");
 /*
-  setODD: (o) -> @$odd = o
-
-  getODDfor: (e) ->
-    elements = @$odd.members
-    for item in elements
-      if item.ident == e
-        return item
-    null
-
   getDescOf: (e) -> @getODDfor(e)?.desc
 
   getChildrenOf: (e) -> 
@@ -324,11 +315,60 @@ throws(block, [expected], [message])
 
     ok(contextHelp.getODDfor("p"), "There's something for 'p'");
     ok(!contextHelp.getODDfor("foobar"), "There's nothing for 'foobar'");
-    console.log(contextHelp.getODDfor("p"));
   });
 
   test("Check XMLDocument(List)", function() {
-    expect(0);
+    var doc, docList;
+
+    ok(typeof Angles.XMLDocument !== "undefined" && Angles.XMLDocument !== null, "XMLDocument class is defined");
+    ok(typeof Angles.XMLDocumentList !== "undefined" && Angles.XMLDocumentList !== null, "XMLDocumentList class is defined");
+
+    doc = new Angles.XMLDocument();
+    ok(typeof doc !== "undefined" && doc !== null, "XMLDocument instance created");
+    deepEqual(doc.attributes, {
+      "name": "untitled",
+      "content": ""
+    }, "correct default attributes for a document");
+
+    doc = new Angles.XMLDocument({
+      "name": "Foo",
+      "content": "Bar"
+    });
+    
+    ok(typeof doc !== "undefined" && doc !== null, "XMLDocument instance created");
+
+    deepEqual(doc.attributes, {
+      "name": "Foo",
+      "content": "Bar"
+    }, "correct attributes for document");
+
+    docList = new Angles.XMLDocumentList();
+    ok(typeof docList !== "undefined" && docList !== null, "XMLDocumentList instance created");
+  });
+
+  test("Check ACE editor instantiation", function() {
+    var editor, dispatcher, doc;
+    //expect(5);
+
+    ok(typeof Angles.ACEEditorView !== "undefined" && Angles.ACEEditorView !== null, "ACEEditorView class is defined");
+    editor = new Angles.ACEEditorView({
+      el: "#ace-editor"
+    });
+    ok(typeof editor !== "undefined" && editor !== null, "editor is created");
+
+    editor.render();
+    ok(typeof editor.$editor !== "undefined" && editor.$editor !== null, "ACE instance is defined");
+
+    ok(editor.$el.hasClass("ace_editor"), "ACE edit area has the right class");
+
+    dispatcher = editor.dispatcher;
+
+    doc = new Angles.XMLDocument({
+      "content": "***Foo***"
+    });
+    editor.setModel(doc);
+    equal(editor.getContent(), "***Foo***", "Getting content from editor returns value set");
+
   });
 
 })();
