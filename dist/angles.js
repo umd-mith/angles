@@ -81,9 +81,9 @@
         return _ref4;
       }
 
-      FileSelector.prototype.template = _.template($('#file-list-template').html());
-
-      FileSelector.prototype.initialize = function() {};
+      FileSelector.prototype.initialize = function() {
+        return this.template = _.template($('#file-list-template').html());
+      };
 
       FileSelector.prototype.render = function() {
         this.$el.html(this.template({}));
@@ -110,9 +110,8 @@
         return _ref5;
       }
 
-      FileSelectorRow.prototype.template = _.template($('#file-item-template').html());
-
       FileSelectorRow.prototype.initialize = function() {
+        this.template = _.template($('#file-item-template').html());
         this.listenTo(this.model, 'change', this.render);
         return this.listenTo(this.model, 'destroy', this.remove);
       };
@@ -133,9 +132,9 @@
         return _ref6;
       }
 
-      NotificationTable.prototype.template = _.template($('#notification-list-template').html());
-
-      NotificationTable.prototype.initialize = function() {};
+      NotificationTable.prototype.initialize = function() {
+        return this.template = _.template($('#notification-list-template').html());
+      };
 
       NotificationTable.prototype.render = function() {
         this.$el.html(this.template({}));
@@ -162,9 +161,8 @@
         return _ref7;
       }
 
-      NotificationRow.prototype.template = _.template($('#notification-template').html());
-
       NotificationRow.prototype.initialize = function() {
+        this.template = _.template($('#notification-template').html());
         this.listenTo(this.model, 'change', this.render);
         return this.listenTo(this.model, 'destroy', this.remove);
       };
@@ -506,10 +504,7 @@
     }
 
     NotificationCenter.prototype.push = function(m) {
-      var n;
-      n = new Angles.Notification();
-      n.set(m);
-      return this.$notifications.add(n);
+      return this.$notifications.add(m);
     };
 
     NotificationCenter.prototype.clear = function() {
@@ -546,6 +541,14 @@
       return this.endValidation();
     };
 
+    Validator.prototype.addError = function(e) {
+      return this.$errors.push(e);
+    };
+
+    Validator.prototype.clearErrors = function() {
+      return this.$errors = [];
+    };
+
     Validator.prototype.endValidation = function() {
       return this.dispatcher.trigger("validation:end");
     };
@@ -557,6 +560,10 @@
 
     Validator.prototype.errors = function() {
       return this.$errors;
+    };
+
+    Validator.prototype.hasErrors = function() {
+      return this.$errors.length !== 0;
     };
 
     return Validator;

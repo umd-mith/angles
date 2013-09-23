@@ -89,9 +89,9 @@ window.Angles = {}
   #   escape: /\{\{-(.+?)\}\}/g
 
   class Angles.FileSelector extends Backbone.View
-    template: _.template $('#file-list-template').html()
 
     initialize: ->
+      @template = _.template $('#file-list-template').html()
 
     render: ->
       @$el.html @template {}
@@ -104,9 +104,9 @@ window.Angles = {}
       @$("form").append view.render().$el
 
   class Angles.FileSelectorRow extends Backbone.View
-    template: _.template $('#file-item-template').html()
 
     initialize: ->
+      @template = _.template $('#file-item-template').html()
       @listenTo @model, 'change', @render
       @listenTo @model, 'destroy', @remove
 
@@ -115,9 +115,9 @@ window.Angles = {}
       @
 
   class Angles.NotificationTable extends Backbone.View
-    template: _.template $('#notification-list-template').html()
 
     initialize: ->
+      @template = _.template $('#notification-list-template').html()
 
     render: ->
       @$el.html @template {}
@@ -130,9 +130,9 @@ window.Angles = {}
       @$(".notifications").append view.render().$el
 
   class Angles.NotificationRow extends Backbone.View
-    template: _.template $('#notification-template').html()
 
     initialize: ->
+      @template = _.template $('#notification-template').html()
       @listenTo @model, 'change', @render
       @listenTo @model, 'destroy', @remove
 
