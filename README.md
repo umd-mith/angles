@@ -45,13 +45,9 @@ source code:
 
 You also need the following Node packages intalled via `npm`:
 
-* grunt-contrib-concat
 * grunt-contrib-uglify
 * grunt-contrib-clean
-* grunt-contrib-watch
-* grunt-contrib-watch
 * grunt-contrib-qunit
-* grunt-contrib-connect
 * grunt-contrib-coffee
 
 ## Repository Structure
