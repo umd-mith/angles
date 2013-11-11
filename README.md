@@ -16,7 +16,6 @@ software through their teaching and research.
 
 This repository has the following directories:
 
-* build\_support: scripts used during the build process.
 * demo: simple demonstration page incorporating the Angles mode plugin. This demo assumes that you have installed the needed dependencies using `bower`.
 * dist: the built plugin ready for distribution.
 * src: the source code for non-ACE components that work with the ACE editor.
@@ -33,7 +32,7 @@ Refer to the demos for examples to set up the various components. Here is what y
 
 #### Required Dependencies
 
-You may download the primary dependencies using `bower` or download your own. (See [bower.io](http://bower.io/) for information on installing and using `bower`.)
+You may download the primary dependencies using `bower` or download your own. (See [bower.io](http://bower.io/#installing-bower) for information on installing and using `bower`.)
 
 From the top directory of the repository, you may run `bower`:
 
