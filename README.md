@@ -12,6 +12,16 @@ humanities centers who have greater resources to program scholarly
 software and the scholars who form the core user community for such 
 software through their teaching and research.
 
+## Repository Structure
+
+This repository has the following directories:
+
+* build\_support: scripts used during the build process.
+* demo: simple demonstration page incorporating the Angles mode plugin. This demo assumes that you have installed the needed dependencies using `bower`.
+* dist: the built plugin ready for distribution.
+* src: the source code for non-ACE components that work with the ACE editor.
+* test: any unit tests.
+
 ## Using Angles in your Project
 
 Refer to the demos for examples to set up the various components. Here is what you'll need for a minimal installation:
@@ -19,11 +29,13 @@ Refer to the demos for examples to set up the various components. Here is what y
 ### The main plugin 
  `dist/angles.js`
 
-###Dependencies 
+### Dependencies 
 
-#### Bower
+#### Required Dependencies
 
-You may download the primary dependencies using `bower` or download your own.
+You may download the primary dependencies using `bower` or download your own. (See [bower.io](http://bower.io/) for information on installing and using `bower`.)
+
+From the top directory of the repository, you may run `bower`:
 
 ```
 $ bower install
@@ -38,6 +50,7 @@ $ bower install underscore
 $ bower install backbone
 ```
 
+This will install the dependencies into `bower_components`.
 
 * [jQuery](https://jquery.com/)
 * [ACE editor](http://ace.c9.io/)
@@ -67,7 +80,11 @@ to manage its build and testing process. This means that
 you need the following installed before you can work on the CoffeeScript
 source code:
 
-* grunt
+* grunt (see [the `grunt` getting started guide](http://gruntjs.com/getting-started))
+
+```
+$ npm install -g grunt-cli
+```
 
 You also need the following Node packages intalled via `npm`:
 
@@ -83,33 +100,18 @@ $ npm install grunt-contrib-qunit
 $ npm install grunt-contrib-coffee
 ```
 
-## Repository Structure
-
-This repository has the following directories:
-
-* build\_support: scripts used during the build process
-* demo: simple demonstration page incorporating the Angles mode plugin
-* deps: dependencies for Angles, including a build of ace
-* dist: the built plugin ready for distribution
-* src: the source code for non-ACE components that work with the ACE editor
-* test: any unit tests
-
-Development should take place in src/.
-
-## Building the Angles plugins
+### Building
 
 To build the plugins for ACE, run the following command:
 
-    % grunt
+```
+$ grunt
+```
 
 This will build everything and leave the new files in `dist/`.
 
+### Testing
 
-## Bower and dependencies
+In order to run the tests from the command line (i.e., using `grunt test`), you'll need to install [PhantomJS](http://phantomjs.org/).
 
-Dependencies are a resolved through `bower`. In order to install
-dependencies, run the `install` command:
-
-```
-$ bower install
-```
+You may also run the tests in your browser by loading the `test/angles.html` page.
