@@ -3,6 +3,7 @@
 *.swp
 *.tmp
 
-node_modules
+node_modules/
+bower_components/
 app/
 .grunt
