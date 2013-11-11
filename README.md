@@ -20,21 +20,47 @@ Refer to the demos for examples to set up the various components. Here is what y
  `dist/angles.js`
 
 ###Dependencies 
-Find them under `deps` or download your own:
 
- * [ACE editor](https://github.com/ajaxorg/ace)
- * [underscore.js](http://underscorejs.org/)
- * [backbone.js](http://backbonejs.org/)
- * ACE Angles extension (`deps/ext-angles.js`) (optional for contextual help)
- * [backbone.localstorage](https://github.com/jeromegn/Backbone.localStorage) (optional for save/load component)
- * [FileSaver](https://github.com/eligrey/FileSaver.js) (optional for saving file to disk)
+#### Bower
+
+You may download the primary dependencies using `bower` or download your own.
+
+```
+$ bower install
+```
+
+or
+
+```
+$ bower install jQuery
+$ bower install ace
+$ bower install underscore
+$ bower install backbone
+```
+
+
+* [jQuery](https://jquery.com/)
+* [ACE editor](http://ace.c9.io/)
+* [underscore.js](http://underscorejs.org/)
+* [backbone.js](http://backbonejs.org/)
+
+#### Optional Dependencies
+
+The following dependencies are optional and are not included in the `bower` configuration:
+
+```
+$ bower install Backbone.localStorage
+$ bower install FileSaver
+```
+
+* [backbone.localstorage](https://github.com/jeromegn/Backbone.localStorage) (optional for save/load component)
+* [FileSaver](https://github.com/eligrey/FileSaver.js) (optional for saving file to disk)
+
+#### ACE Angles Extension
+
+* ACE Angles extension (`deps/ext-angles.js`) (optional for contextual help)
 
 ## Development Toolchain
-
-The development up to now has been able to extend the Ace Editor without
-requiring modification of the XML mode, so the rest of this section is
-nascent until such time that the XML mode must be modified to support some
-functionality being added to ANGLES.
 
 Angles is based on the [Ace Editor](http://ace.ajax.org/) and uses `grunt`
 to manage its build and testing process. This means that
@@ -49,6 +75,13 @@ You also need the following Node packages intalled via `npm`:
 * grunt-contrib-clean
 * grunt-contrib-qunit
 * grunt-contrib-coffee
+
+```
+$ npm install grunt-contrib-uglify
+$ npm install grunt-contrib-clean
+$ npm install grunt-contrib-qunit
+$ npm install grunt-contrib-coffee
+```
 
 ## Repository Structure
 
@@ -80,6 +113,3 @@ dependencies, run the `install` command:
 ```
 $ bower install
 ```
-
-http://sindresorhus.com/bower-components/
-
