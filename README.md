@@ -25,8 +25,15 @@ This repository has the following directories:
 
 Refer to the demos for examples to set up the various components. Here is what you'll need for a minimal installation:
 
-### The main plugin 
- `dist/angles.js`
+### The Angles plugin
+
+When built, the main plugin will be in `dist/angles.js`. You may also install the most recent distribution using `bower`. (See [bower.io](http://bower.io/#installing-bower) for information on installing and using `bower`.)
+
+```
+$ bower install angles-tei
+```
+
+The plugin will be in `bower_components/angles/dist/angles.js`. The required dependencies (see below) will also be installed. However, optional dependencies will need to be installed separately.
 
 ### Dependencies 
 
@@ -65,7 +72,7 @@ $ bower install Backbone.localStorage
 $ bower install FileSaver
 ```
 
-* [backbone.localstorage](https://github.com/jeromegn/Backbone.localStorage) (optional for save/load component)
+* [Backbone.localStorage](https://github.com/jeromegn/Backbone.localStorage) (optional for save/load component)
 * [FileSaver](https://github.com/eligrey/FileSaver.js) (optional for saving file to disk)
 
 #### ACE Angles Extension
