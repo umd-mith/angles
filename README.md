@@ -45,7 +45,7 @@ or
 
 ```
 $ bower install jQuery
-$ bower install ace
+$ bower install ace-builds
 $ bower install underscore
 $ bower install backbone
 ```
@@ -112,6 +112,16 @@ This will build everything and leave the new files in `dist/`.
 
 ### Testing
 
-In order to run the tests from the command line (i.e., using `grunt test`), you'll need to install [PhantomJS](http://phantomjs.org/).
+The tests assume that you have installed the required dependencies using `bower`.
 
-You may also run the tests in your browser by loading the `test/angles.html` page.
+#### Headless Testing
+
+You may run tests without a browser using `grunt` if you have [PhantomJS](http://phantomjs.org/) installed.
+
+```
+$ grunt test
+```
+
+#### In-Browser Testing
+
+You may also run the tests in your browser by loading the `test/angles.html` page. Any errors will be highlighted in the web page. You may also want to view the browser's console log for additional error messages or stack traces if there are errors.
