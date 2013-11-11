@@ -33,7 +33,7 @@ When built, the main plugin will be in `dist/angles.js`. You may also install th
 $ bower install angles-tei
 ```
 
-The plugin will be in `bower_components/angles/dist/angles.js`.
+The plugin will be in `bower_components/angles/dist/angles.js`. The required dependencies (see below) will also be installed. However, optional dependencies will need to be installed separately.
 
 ### Dependencies 
 
