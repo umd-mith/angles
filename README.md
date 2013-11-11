@@ -23,7 +23,7 @@ This repository has the following directories:
 
 ## Using Angles in your Project
 
-Refer to the demos for examples to set up the various components. Here is what you'll need for a minimal installation:
+Refer to the demos for examples to set up the various components. A minimal installation of Angles would include the Angles plugin and the required dependencies listed below.
 
 ### The Angles plugin
 
