@@ -1,4 +1,4 @@
-# Angles
+# ANGLES
 
 The ANGLES Project is a research project aimed at developing a 
 lightweight, online XML code editor, which can support teaching of 
@@ -16,16 +16,16 @@ software through their teaching and research.
 
 This repository has the following directories:
 
-* demo: simple demonstration page incorporating the Angles mode plugin. This demo assumes that you have installed the needed dependencies using `bower`.
+* demo: simple demonstration page incorporating the ANGLES mode plugin. This demo assumes that you have installed the needed dependencies using `bower`.
 * dist: the built plugin ready for distribution.
 * src: the source code for non-ACE components that work with the ACE editor.
 * test: any unit tests.
 
-## Using Angles in your Project
+## Using ANGLES in your Project
 
-Refer to the demos for examples to set up the various components. A minimal installation of Angles would include the Angles plugin and the required dependencies listed below.
+Refer to the demos for examples to set up the various components. A minimal installation of ANGLES would include the ANGLES plugin and the required dependencies listed below.
 
-### The Angles plugin
+### The ANGLES plugin
 
 When built, the main plugin will be in `dist/angles.js`. You may also install the most recent distribution using `bower`. (See [bower.io](http://bower.io/#installing-bower) for information on installing and using `bower`.)
 
@@ -75,13 +75,13 @@ $ bower install FileSaver
 * [Backbone.localStorage](https://github.com/jeromegn/Backbone.localStorage) (optional for save/load component)
 * [FileSaver](https://github.com/eligrey/FileSaver.js) (optional for saving file to disk)
 
-#### ACE Angles Extension
+#### ACE ANGLES Extension
 
-* ACE Angles extension (`deps/ext-angles.js`) (optional for contextual help)
+* ACE ANGLES extension (`deps/ext-angles.js`) (optional for contextual help)
 
 ## Development Toolchain
 
-Angles is based on the [Ace Editor](http://ace.ajax.org/) and uses `grunt`
+ANGLES is based on the [Ace Editor](http://ace.ajax.org/) and uses `grunt`
 to manage its build and testing process. This means that
 you need the following installed before you can work on the CoffeeScript
 source code:
