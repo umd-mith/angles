@@ -2,6 +2,13 @@
 
 The HTML pages in this directory demonstrate how to use Angles with a number of optional components.
 
+To make the demo page work, you will need to install the optional dependencies, which are not included in the `bower` configuration:
+
+```
+$ bower install Backbone.localStorage
+$ bower install FileSaver
+```
+
 ## `index.html`
 
 The basic demonstration shows how to use Angles with the optional file upload/download components but without any server-side components.
