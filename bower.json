@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "jquery": "~2.0.3",
-    "ace": "~1.1.1",
+    "ace-builds": "~1.1.1",
     "underscore": "~1.5.1",
     "backbone": "1.0.0"
   },
