@@ -48,17 +48,35 @@
         <div class="row">
             <div class="span9">
               <span id="status_icon">&nbsp;</span>
-            <div id="editor">&lt;!-- 
-Some TEI document here 
---&gt;</div>
+            <div id="editor">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;TEI xmlns="http://www.tei-c.org/ns/1.0"&gt;
+  &lt;teiHeader&gt;
+    &lt;fileDesc&gt;
+      &lt;titleStmt&gt;
+        &lt;title&gt;Title&lt;/title&gt;
+      &lt;/titleStmt&gt;
+      &lt;publicationStmt&gt;
+        &lt;p&gt;Publication Information&lt;/p&gt;
+      &lt;/publicationStmt&gt;
+      &lt;sourceDesc&gt;
+        &lt;p&gt;Information about the source&lt;/p&gt;
+      &lt;/sourceDesc&gt;
+    &lt;/fileDesc&gt;
+  &lt;/teiHeader&gt;
+  &lt;text&gt;
+    &lt;body&gt;
+      &lt;p&gt;Some text here.&lt;/p&gt;
+    &lt;/body&gt;
+  &lt;/text&gt;
+&lt;/TEI&gt;</div>
 </div>
 <div class="span3">
   <h2>Local Storage</h2>
   <ul class="unstyled">
-    <li><a href="#saveModal" role="button" class="btn" data-toggle="modal">Save As...</a></li>
-    <li><a id="saveFile" role="button" class="btn">Save File</a></li>
-    <li><a href="#loadModal" role="button" class="btn" data-toggle="modal">Load File</a></li>
-    <li><a id="downloadFile" role="button" class="btn">Download File</a></li>
+    <li><a href="#saveModal" role="button" class="btn" data-toggle="modal">Save to Browser Storage as...</a></li>
+    <li><a id="saveFile" role="button" class="btn">Save to Browser Storage</a></li>
+    <li><a href="#loadModal" role="button" class="btn" data-toggle="modal">Load from Browser Storage</a></li>
+    <li><a id="downloadFile" role="button" class="btn">Download to Disk</a></li>
   </ul>
   <div class="fileupload fileupload-new" data-provides="fileupload">
     <span class="btn btn-file"><span class="fileupload-new">Load from Disk</span><span class="fileupload-exists">Change</span><input type="file" /></span>
@@ -135,7 +153,7 @@ Some TEI document here
 <script src="js/bootstrap.js" type="text/javascript" charset="utf-8"></script>    
 <script src="js/jasny-bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
 
-<script src="../bower_components/Backbone.localStorage/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
+<script src="../bower_components/backbone.localStorage/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
 <script src="../vendor/isaacs/sax-js/lib/sax.js" type="text/javascript" charset="utf-8"></script>
 <script src="../bower_components/FileSaver/FileSaver.js" type="text/javascript" charset="utf-8"></script>
 
@@ -260,6 +278,9 @@ Some TEI document here
 
     $("#loadModal").on('show', function() {
       // we want to show a list of models and allow selection
+      if (selector.collection.length == 0) {
+        $("#loadModal > .modal-body").html("<p>No files saved in Browser Storage yet.</p>");
+      }
       selector.render().$el.appendTo($("#loadModal > .modal-body"));
     });
 

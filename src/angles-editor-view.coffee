@@ -221,22 +221,22 @@ window.Angles = {}
                 _scanRow = (row, column) ->            
                   curColumn = 0
                   tokens = editor.getSession().getTokens(row)
-
+                  
                   for token in tokens
                     curColumn += token.value.length;
                     if curColumn > column
-                      if token.type == "meta.tag.punctuation.begin" and token.value == "<"
+                      if token.type == "meta.tag" and token.value == "<"
                         isOpeningTag = true
-                      else if token.type == "meta.tag.punctuation.begin" and token.value == "</"
+                      else if token.type == "meta.tag" and token.value == "</"
                         isClosingTag = true
-                      else if token.type == "meta.tag.punctuation.end" and token.value == "/>"
+                      else if token.type == "meta.tag.r" and token.value == "/>"
                         openTags.pop()
                         isOpeningTag = false
                         isClosingTag = false
-                      else if token.type == "meta.tag.name" and isOpeningTag
+                      else if token.type == "meta.tag.tag-name" and isOpeningTag
                         openTags.push(token.value)
                         isOpeningTag = false
-                      else if token.type == "meta.tag.name" && isClosingTag
+                      else if token.type == "meta.tag.tag-name" && isClosingTag
                         closedTags.push(token.value)
                         isClosingTag = false
 
@@ -275,7 +275,7 @@ window.Angles = {}
                   snippet: ""
                   meta: "element"
 
-              if completions.length > 0
+              if completions.length > 0 
                 callback null, completions
             else
               0 #console.log 'Context Help component not loaded'  
