@@ -33,7 +33,7 @@ throws(block, [expected], [message])
       dispatcher: _.clone(Backbone.Events)
     }), dispatcher, validationEventTriggered = 0, validationEndEventTriggered = 0, validationErrorEventTriggered = 0;
 
-    expect(22);
+    expect(28);
 
     dispatcher = validator.dispatcher;
 
@@ -53,6 +53,9 @@ throws(block, [expected], [message])
     ok(typeof validator.setSchema !== "undefined" && validator.setSchema !== null, "setSchema method exists");
     ok(typeof validator.errors !== "undefined" && validator.errors !== null, "errors method exists");
 
+    equal(validationEventTriggered, 0, "validation event counter zero before test");
+    equal(validationErrorEventTriggered, 0, "validation:error counter zero before test");
+    equal(validationEndEventTriggered, 0, "validation:end counter zero before test");
     validator.setSchema({});
     equal(validationEventTriggered, 1, "validation event was triggered by setting the schema");
     equal(validationErrorEventTriggered, 0, "validation:error not triggered by setting the schema");
@@ -61,7 +64,9 @@ throws(block, [expected], [message])
     validationEventTriggered = 0;
     validationErrorEventTriggered = 0;
     validationEndEventTriggered = 0;
-
+    equal(validationEventTriggered, 0, "validation event counter zero before test");
+    equal(validationErrorEventTriggered, 0, "validation:error counter zero before test");
+    equal(validationEndEventTriggered, 0, "validation:end counter zero before test");
     validator.endValidation();
     equal(validationEventTriggered, 0, "validation event not triggered by endValidation");
     equal(validationErrorEventTriggered, 0, "validation:error not triggered by endValidation");
@@ -97,7 +102,7 @@ throws(block, [expected], [message])
     var validator, dispatcher, validationEventTriggered = 0, validationEndEventTriggered = 0, 
       validationErrorEventTriggered = 0, doc;
 
-    expect(17);
+    expect(23);
 
     validator = new Angles.ValidatorSAX({
       dispatcher: _.clone(Backbone.Events)
@@ -112,16 +117,19 @@ throws(block, [expected], [message])
     dispatcher = validator.dispatcher;
 
     dispatcher.on("validation", function() {
-      validationEventTriggered += 1;
+      validationEventTriggered = 1;
     });
     dispatcher.on("validation:end", function() {
-      validationEndEventTriggered += 1;
+      validationEndEventTriggered = 1;
     });
     dispatcher.on("validation:error", function() {
       validationErrorEventTriggered += 1;
     });
 
     ok(typeof window.testSchema !== "undefined" && window.testSchema !== null, "Schema loaded");
+    equal(validationEventTriggered, 0, "validation event counter zero before test");
+    equal(validationErrorEventTriggered, 0, "validation:error counter zero before test");
+    equal(validationEndEventTriggered, 0, "validation:end counter zero before test");
     validator.setSchema(window.testSchema);
     
     equal(validationEventTriggered, 1, "validation event was triggered by setting the schema");
@@ -143,10 +151,13 @@ throws(block, [expected], [message])
       ]
     };
 
+    equal(validationEventTriggered, 0, "validation event counter zero before test");
+    equal(validationErrorEventTriggered, 0, "validation:error counter zero before test");
+    equal(validationEndEventTriggered, 0, "validation:end counter zero before test");
     validator.validate(doc);
 
     equal(validationEventTriggered, 0, "validation event not triggered by validation");
-    equal(validationErrorEventTriggered, 1, "validation:error triggered by validation");
+    ok(validationErrorEventTriggered > 0, "validation:error triggered by validation");
     equal(validationEndEventTriggered, 1, "validation:end triggered by validation");
     equal(validator.errors().length, 1, "one error");
     equal(validator.errors()[0].row, 1, "on row one");
@@ -156,39 +167,39 @@ throws(block, [expected], [message])
     // from https://github.com/opensiddur/opensiddur/blob/master/code/tests/minimal-valid.xml
 
     doc.$lines = [
-      '<tei:TEI xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:j="http://jewishliturgy.org/ns/jlptei/1.0" xmlns:cc="http://web.resource.org/cc/" xml:base="http://jewishliturgy.org/base/text/contributors">',
-      '  <tei:teiHeader>',
-      '    <tei:fileDesc>',
-      '      <tei:titleStmt>',
-      '          <tei:title xml:lang="en">Minimal valid JLPTEI</tei:title>',
-      '      </tei:titleStmt>',
-      '      <tei:publicationStmt>',
-      '          <tei:availability status="free">',
-      '              <tei:p xml:lang="en">To the extent possible under law, ',
+      '<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:j="http://jewishliturgy.org/ns/jlptei/1.0" xmlns:cc="http://web.resource.org/cc/" xml:base="http://jewishliturgy.org/base/text/contributors">',
+      '  <teiHeader>',
+      '    <fileDesc>',
+      '      <titleStmt>',
+      '          <title xml:lang="en">Minimal valid JLPTEI</title>',
+      '      </titleStmt>',
+      '      <publicationStmt>',
+      '          <availability status="free">',
+      '              <p xml:lang="en">To the extent possible under law, ',
       'the contributors who associated  ',
-      '<tei:ref type="license" target="licenses/cc0/1.0">Creative Commons Zero</tei:ref> ',
+      '<ref type="license" target="licenses/cc0/1.0">Creative Commons Zero</ref> ',
       'with this work have waived all copyright and related or ',
       'neighboring rights to this work.  ',
       'A list of contributors is available at ',
-      '<tei:ref type="attribution" target="http://jewishliturgy.org/base/text/contributors">http://jewishliturgy.org/base/text/contributors</tei:ref>.',
-      '</tei:p>',
-      '          </tei:availability>',
-      '          <tei:idno type="svn">$Id: minimal-valid.xml 411 2010-01-03 06:58:09Z efraim.feinstein $</tei:idno>',
-      '      </tei:publicationStmt>',
-      '      <tei:sourceDesc>',
-      '          <tei:p>Born digital.</tei:p>',
-      '      </tei:sourceDesc>',
-      '  </tei:fileDesc>',
-    '</tei:teiHeader>',
-    '<tei:text>',
-      '  <tei:body>',
-      '      <tei:div xml:lang="en">',
-      '        <tei:head>Shortest document ever</tei:head>',
-      '        <tei:p>Yay!</tei:p>',
-      '      </tei:div>',
-      '  </tei:body>',
-    '</tei:text>',
-'</tei:TEI>'
+      '<ref type="attribution" target="http://jewishliturgy.org/base/text/contributors">http://jewishliturgy.org/base/text/contributors</ref>.',
+      '</p>',
+      '          </availability>',
+      '          <idno type="svn">$Id: minimal-valid.xml 411 2010-01-03 06:58:09Z efraim.feinstein $</idno>',
+      '      </publicationStmt>',
+      '      <sourceDesc>',
+      '          <p>Born digital.</p>',
+      '      </sourceDesc>',
+      '  </fileDesc>',
+    '</teiHeader>',
+    '<text>',
+      '  <body>',
+      '      <div xml:lang="en">',
+      '        <head>Shortest document ever</head>',
+      '        <p>Yay!</p>',
+      '      </div>',
+      '  </body>',
+    '</text>',
+'</TEI>'
     ];
 
     validationEventTriggered = 0;

@@ -17,7 +17,8 @@ class Angles.Validator
 
   clearErrors: -> @$errors = []
 
-  endValidation: -> @dispatcher.trigger "validation:end"
+  endValidation: -> 
+    @dispatcher.trigger "validation:end"
 
   setSchema: (s) ->
     @$schema = s
