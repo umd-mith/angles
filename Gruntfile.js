@@ -32,6 +32,23 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['coffee', 'uglify']);
   grunt.registerTask('test', ['qunit']);
 
+  grunt.registerTask('install', 'Install all JavaScript dependencies using bower, including optional libraries.', function() {
+    var shell = require('shelljs');
+    console.log("Running `bower install`");
+    if(!shell.which("bower")) {
+      console.log("Sorry, this script requires bower.");
+      exit(1);
+    }
+    shell.exec('bower install');
+    shell.exec('bower install Backbone.localStorage');
+    shell.exec('bower install FileSaver');
+  });
+
+  grunt.registerTask('demo', 'Install all dependencies and provide a list of demo files', function() {
+    console.log("demo/index.html");
+    console.log("demo/srvValidation.html");
+  });
+
   grunt.event.on('qunit.spawn', function(url) {
     grunt.log.ok("Running test: " + url);
   });
