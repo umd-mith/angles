@@ -1338,6 +1338,7 @@ dom.importCssString("\
 }\
 .ace_autocomplete {\
     width: 200px;\
+    height: 120px;\
     z-index: 200000;\
     background: #f8f8f8;\
     border: 1px lightgray solid;\

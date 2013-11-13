@@ -268,18 +268,18 @@
                       token = tokens[_i];
                       curColumn += token.value.length;
                       if (curColumn > column) {
-                        if (token.type === "meta.tag.punctuation.begin" && token.value === "<") {
+                        if (token.type === "meta.tag" && token.value === "<") {
                           isOpeningTag = true;
-                        } else if (token.type === "meta.tag.punctuation.begin" && token.value === "</") {
+                        } else if (token.type === "meta.tag" && token.value === "</") {
                           isClosingTag = true;
-                        } else if (token.type === "meta.tag.punctuation.end" && token.value === "/>") {
+                        } else if (token.type === "meta.tag.r" && token.value === "/>") {
                           openTags.pop();
                           isOpeningTag = false;
                           isClosingTag = false;
-                        } else if (token.type === "meta.tag.name" && isOpeningTag) {
+                        } else if (token.type === "meta.tag.tag-name" && isOpeningTag) {
                           openTags.push(token.value);
                           isOpeningTag = false;
-                        } else if (token.type === "meta.tag.name" && isClosingTag) {
+                        } else if (token.type === "meta.tag.tag-name" && isClosingTag) {
                           closedTags.push(token.value);
                           isClosingTag = false;
                         }
