@@ -20,14 +20,18 @@ class Angles.SAXParser
         xmlns: true
         noscript: true
         position: true
+
+
       
       if callbacks.error?
         parser.onerror = (e) =>
-          callbacks.error.call @, e
+          if e.message.split(/\n/)[0] != "Text data outside of root node."
+            callbacks.error.call @, e
           parser.resume()
       else
         parser.onerror = (e) =>
-          @validationError (e.message.split(/\n/))[0] + "."
+          if e.message.split(/\n/)[0] != "Text data outside of root node."
+            @validationError (e.message.split(/\n/))[0]
           parser.resume()
 
       if callbacks.characters?
