@@ -35,7 +35,15 @@ $ bower install angles-tei
 
 The plugin will be in `bower_components/angles/dist/angles.js`. The required dependencies (see below) will also be installed. However, optional dependencies will need to be installed separately.
 
-### Dependencies 
+### Dependencies
+
+ANGLES has a number of JavaScript libraries on which it depends. These may be installed using `bower` or using `grunt`, though `grunt` will require that `bower` be installed.
+
+To use `grunt` to manage `bower` and install all dependencies, both required and optional, run:
+
+```
+$ grunt install
+```
 
 #### Required Dependencies
 
@@ -98,13 +106,23 @@ You also need the following Node packages intalled via `npm`:
 * grunt-contrib-clean
 * grunt-contrib-qunit
 * grunt-contrib-coffee
+* shelljs
 
 ```
 $ npm install grunt-contrib-uglify
 $ npm install grunt-contrib-clean
 $ npm install grunt-contrib-qunit
 $ npm install grunt-contrib-coffee
+$ npm install shelljs
 ```
+
+You can also install these dependencies by running
+
+```
+$ npm install
+```
+
+in your clone of the repository.
 
 ### Building
 
