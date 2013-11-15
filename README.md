@@ -21,72 +21,6 @@ This repository has the following directories:
 * src: the source code for non-ACE components that work with the ACE editor.
 * test: any unit tests.
 
-## Using ANGLES in your Project
-
-Refer to the demos for examples to set up the various components. A minimal installation of ANGLES would include the ANGLES plugin and the required dependencies listed below.
-
-### The ANGLES plugin
-
-When built, the main plugin will be in `dist/angles.js`. You may also install the most recent distribution using `bower`. (See [bower.io](http://bower.io/#installing-bower) for information on installing and using `bower`.)
-
-```
-$ bower install angles-tei
-```
-
-The plugin will be in `bower_components/angles/dist/angles.js`. The required dependencies (see below) will also be installed. However, optional dependencies will need to be installed separately.
-
-### Dependencies
-
-ANGLES has a number of JavaScript libraries on which it depends. These may be installed using `bower` or using `grunt`, though `grunt` will require that `bower` be installed.
-
-To use `grunt` to manage `bower` and install all dependencies, both required and optional, run:
-
-```
-$ grunt install
-```
-
-#### Required Dependencies
-
-You may download the primary dependencies using `bower` or download your own. (See [bower.io](http://bower.io/#installing-bower) for information on installing and using `bower`.)
-
-From the top directory of the repository, you may run `bower`:
-
-```
-$ bower install
-```
-
-or
-
-```
-$ bower install jQuery
-$ bower install ace-builds
-$ bower install underscore
-$ bower install backbone
-```
-
-This will install the dependencies into `bower_components`.
-
-* [jQuery](https://jquery.com/)
-* [ACE editor](http://ace.c9.io/)
-* [underscore.js](http://underscorejs.org/)
-* [backbone.js](http://backbonejs.org/)
-
-#### Optional Dependencies
-
-The following dependencies are optional and are not included in the `bower` configuration:
-
-```
-$ bower install Backbone.localStorage
-$ bower install FileSaver
-```
-
-* [Backbone.localStorage](https://github.com/jeromegn/Backbone.localStorage) (optional for save/load component)
-* [FileSaver](https://github.com/eligrey/FileSaver.js) (optional for saving file to disk)
-
-#### ACE ANGLES Extension
-
-* ACE ANGLES extension (`deps/ext-angles.js`) (optional for contextual help)
-
 ## Development Toolchain
 
 ANGLES is based on the [Ace Editor](http://ace.ajax.org/) and uses `grunt`
@@ -149,3 +83,64 @@ $ grunt test
 #### In-Browser Testing
 
 You may also run the tests in your browser by loading the `test/angles.html` page. Any errors will be highlighted in the web page. You may also want to view the browser's console log for additional error messages or stack traces if there are errors.
+## Using ANGLES in your Project
+
+Refer to the demos for examples to set up the various components. A minimal installation of ANGLES would include the ANGLES plugin and the required dependencies listed below.
+
+### The ANGLES plugin
+
+When built, the main plugin will be in `dist/angles.js`. You may also install the most recent distribution using `bower`. (See [bower.io](http://bower.io/#installing-bower) for information on installing and using `bower`.)
+
+```
+$ bower install angles-tei
+```
+
+The plugin will be in `bower_components/angles/dist/angles.js`. The required dependencies (see below) will also be installed. However, optional dependencies will need to be installed separately.
+
+### Dependencies
+
+ANGLES has a number of JavaScript libraries on which it depends. These may be installed using `bower` or using `grunt`, though `grunt` will require that `bower` be installed.
+
+To use `grunt` to manage `bower` and install all dependencies, both required and optional, run:
+
+```
+$ grunt install
+```
+
+#### Required Dependencies
+
+You may download the primary dependencies using `bower` or download your own. (See [bower.io](http://bower.io/#installing-bower) for information on installing and using `bower`.)
+
+From the top directory of the repository, you may run `bower`:
+
+```
+$ bower install
+```
+
+or
+
+```
+$ bower install jQuery
+$ bower install ace-builds
+$ bower install underscore
+$ bower install backbone
+```
+
+This will install the dependencies into `bower_components`.
+
+* [jQuery](https://jquery.com/)
+* [ACE editor](http://ace.c9.io/)
+* [underscore.js](http://underscorejs.org/)
+* [backbone.js](http://backbonejs.org/)
+
+#### Optional Dependencies
+
+The following dependencies are optional and are not included in the `bower` configuration:
+
+```
+$ bower install Backbone.localStorage
+$ bower install FileSaver
+```
+
+* [Backbone.localStorage](https://github.com/jeromegn/Backbone.localStorage) (optional for save/load component)
+* [FileSaver](https://github.com/eligrey/FileSaver.js) (optional for saving file to disk)
