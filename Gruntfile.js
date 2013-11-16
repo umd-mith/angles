@@ -13,6 +13,8 @@ module.exports = function(grunt) {
       }
     },
 
+    clean: [ 'dist', 'bower_components' ],
+
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
@@ -29,10 +31,10 @@ module.exports = function(grunt) {
     },
   });
 
-  grunt.registerTask('default', ['coffee', 'uglify']);
-  grunt.registerTask('test', ['qunit']);
+  grunt.registerTask('default', ['coffee', 'uglify', 'install-deps']);
+  grunt.registerTask('test', ['default', 'qunit']);
 
-  grunt.registerTask('install', 'Install all JavaScript dependencies using bower, including optional libraries.', function() {
+  grunt.registerTask('install-deps', 'Install all JavaScript dependencies using bower, including optional libraries.', function() {
     var shell = require('shelljs');
     if(!shell.which("bower")) {
       console.log("Sorry, this script requires bower.");
@@ -44,7 +46,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('demo', 'Install all dependencies and provide a list of demo files', ['default', 'install', 'demo:files' ]);
-  grunt.registerTask('demo:files', function() {
+  grunt.registerTask('demo:files', "List available demonstration files.", function() {
     console.log("demo/index.html");
     console.log("demo/srvValidation.html");
   });

@@ -66,7 +66,7 @@ To build the plugins for ACE, run the following command:
 $ grunt
 ```
 
-This will build everything and leave the new files in `dist/`.
+This will build everything and leave the new files in `dist/`. In addition, all required and optional JavaScript dependencies managed through `bower` will be downloaded and placed in the `bower_components/` directory.
 
 ### Testing
 
@@ -104,7 +104,7 @@ ANGLES has a number of JavaScript libraries on which it depends. These may be in
 To use `grunt` to manage `bower` and install all dependencies, both required and optional, run:
 
 ```
-$ grunt install
+$ grunt install-deps
 ```
 
 #### Required Dependencies
@@ -144,3 +144,23 @@ $ bower install FileSaver
 
 * [Backbone.localStorage](https://github.com/jeromegn/Backbone.localStorage) (optional for save/load component)
 * [FileSaver](https://github.com/eligrey/FileSaver.js) (optional for saving file to disk)
+
+### Demo
+
+A number of demonstrations are available in the `demo/` directory. See [the README](./demo/README.md) in that directory for more information.
+
+You can ensure everything is built and dependencies are downloaded by running
+
+```
+$ grunt demo
+```
+
+This will also print out a list of demonstration files that you may open in your browser.
+
+### Cleaning Files
+
+After building ANGLES or installing JavaScript libraries with `bower`, you can clean the `dist/` and `bower_components/` directories by running:
+
+```
+$ grunt clean
+```
