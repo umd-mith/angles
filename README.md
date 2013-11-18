@@ -166,3 +166,9 @@ After building ANGLES or installing JavaScript libraries with `bower`, you can c
 ```
 $ grunt clean
 ```
+
+To remove any locally installed node modules, you may run:
+
+```
+$ grunt real-clean
+```
