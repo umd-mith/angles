@@ -2,12 +2,16 @@
 
 The HTML pages in this directory demonstrate how to use Angles with a number of optional components.
 
-To make the demo page work, you will need to install the optional dependencies, which are not included in the `bower` configuration:
+To install all of the dependencies and build the ANGLES library, you can install the required node libraries and then run the 'demo' grunt task:
 
 ```
-$ bower install Backbone.localStorage
-$ bower install FileSaver
+$ npm install
+$ grunt demo
 ```
+
+This will run through various installation procedures and end by printing out a list of available demonstration files.
+
+See the [top-level README](../README.md) for motr information on installing grunt and associated dependencies.
 
 ## `index.html`
 
