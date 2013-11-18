@@ -2,6 +2,10 @@ module.exports = function(grunt) {
 
   'use strict';
 
+  // catch these here so they don't bite us later when we try to run tasks
+  var shell = require('shelljs'),
+      rimraf = require('rimraf');
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
@@ -33,9 +37,34 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['coffee', 'uglify', 'install-deps']);
   grunt.registerTask('test', ['default', 'qunit']);
+  grunt.registerTask('real-clean', [ 'clean', 'clean:node_modules']);
+
+  grunt.registerTask('clean:node_modules', 'Remove locally installed node modules.', function() {
+    var filepath = './node_modules';
+    if(!grunt.file.exists(filepath)) {
+      return false;
+    }
+    if(grunt.file.isPathCwd(filepath)) {
+      grunt.verbose.error();
+      grunt.fail.warn('Cannot delete the current working directory.');
+      return false;
+    }
+    else if(!grunt.file.isPathInCwd(filepath)) {
+      grunt.verbose.error();
+      grunt.fail.warn('Cannot delete files outside the current working directory.');
+      return false;
+    }
+    try {
+      rimraf.sync(filepath);
+      grunt.log.ok();
+    }
+    catch(e) {
+      grunt.log.error();
+      grunt.fail.warn('Unable to delete "' + filepath + '" file (' + e.message + ').', e);
+    }
+  });
 
   grunt.registerTask('install-deps', 'Install all JavaScript dependencies using bower, including optional libraries.', function() {
-    var shell = require('shelljs');
     if(!shell.which("bower")) {
       console.log("Sorry, this script requires bower.");
       exit(1);

@@ -17,7 +17,8 @@
     "grunt-contrib-clean": "latest",
     "grunt-contrib-qunit": "~0.2.2",
     "grunt-contrib-coffee": "latest",
-    "shelljs": "latest"
+    "shelljs": "latest",
+    "rimraf": "~2.2.1"
   },
   "scripts": {
     "test": "grunt test"

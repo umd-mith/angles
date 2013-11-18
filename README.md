@@ -40,6 +40,7 @@ You also need the following Node packages intalled via `npm`:
 * grunt-contrib-clean
 * grunt-contrib-qunit
 * grunt-contrib-coffee
+* rimraf
 * shelljs
 
 ```
@@ -47,6 +48,7 @@ $ npm install grunt-contrib-uglify
 $ npm install grunt-contrib-clean
 $ npm install grunt-contrib-qunit
 $ npm install grunt-contrib-coffee
+$ npm install rimraf
 $ npm install shelljs
 ```
 
