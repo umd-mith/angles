@@ -1703,8 +1703,7 @@
             if (matches != null ? matches.length : void 0) {
               _this.completions = new FilteredList(matches);
               _this.completions.setFilter(results.prefix);
-              _this.openPopup(_this.editor, keepPopupPosition);
-              return _this.popup.setHighlight(results.prefix);
+              return _this.openPopup(_this.editor, keepPopupPosition);
             } else {
               return _this.detach();
             }

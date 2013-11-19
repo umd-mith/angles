@@ -19,7 +19,8 @@
     "grunt-contrib-qunit": "~0.2.2",
     "grunt-contrib-coffee": "latest",
     "shelljs": "latest",
-    "rimraf": "~2.2.1"
+    "rimraf": "~2.2.1",
+    "bower": "latest"
   },
   "scripts": {
     "test": "grunt test"
