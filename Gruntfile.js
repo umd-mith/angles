@@ -4,7 +4,8 @@ module.exports = function(grunt) {
 
   // catch these here so they don't bite us later when we try to run tasks
   var shell = require('shelljs'),
-      rimraf = require('rimraf');
+      rimraf = require('rimraf'),
+      bower_cmd = require('bower/lib/util/cmd');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -65,16 +66,25 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('install-deps', 'Install all JavaScript dependencies using bower, including optional libraries.', function() {
+    var done = this.async();
     if(!shell.which("bower")) {
       console.log("Sorry, this script requires bower.");
       exit(1);
     }
     console.log("Running 'bower install'");
-    shell.exec('bower install');
-    console.log("Running 'bower install Backbone.localStorage'");
-    shell.exec('bower install Backbone.localStorage');
-    console.log("Running 'bower install FileSaver'");
-    shell.exec('bower install FileSaver');
+    bower_cmd('bower',['install']).then(function() {
+      console.log("running 'bower install Backbone.localStorage'");
+      return bower_cmd('bower', ['install', 'Backbone.localStorage']);
+    }).then(function() {
+      console.log("running 'bower install FileSaver'");
+      return bower_cmd('bower', ['install', 'FileSaver']);
+    }).then(function() {
+      console.log("Finished installing dependencies");
+      done();
+    }).fail(function() {
+      console.log("Unable to install dependencies");
+      done();
+    }).done();
   });
 
   grunt.registerTask('demo', 'Install all dependencies and provide a list of demo files', ['default', 'install-deps', 'demo:files' ]);
