@@ -28,6 +28,15 @@ This repository has the following directories:
 $ git clone --recursive https://github.com/umd-mith/angles.git
 ```
 
+If you've already cloned the repository without the `--recursive` flag, or if you are using a client
+that does not allow you to specify the flag, you can manually check out these dependencies with the following commands:
+
+``` bash
+$ git submodule init
+$ git submodule update
+```
+
+
 ## Development Toolchain
 
 ANGLES is based on the [Ace Editor](http://ace.ajax.org/) and uses `grunt`
