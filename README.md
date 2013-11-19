@@ -20,6 +20,13 @@ This repository has the following directories:
 * dist: the built plugin ready for distribution.
 * src: the source code for non-ACE components that work with the ACE editor.
 * test: any unit tests.
+* vendor: dependencies not available through `bower`
+
+**N.B.**: You will need to clone this repository recursively to capture the dependencies in `vendor/`:
+
+```
+$ git clone --recursive https://github.com/umd-mith/angles.git
+```
 
 ## Development Toolchain
 
@@ -28,10 +35,13 @@ to manage its build and testing process. This means that
 you need the following installed before you can work on the CoffeeScript
 source code:
 
+* node.js (see [the guide to installing Node.js via package manager](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager); you will need a recent version of node.js)
 * grunt (see [the `grunt` getting started guide](http://gruntjs.com/getting-started))
+* bower
 
 ```
 $ npm install -g grunt-cli
+$ npm install -g bower
 ```
 
 You also need the following Node packages intalled via `npm`:
