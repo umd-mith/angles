@@ -24,7 +24,7 @@ This repository has the following directories:
 
 **N.B.**: You will need to clone this repository recursively to capture the dependencies in `vendor/`:
 
-```
+``` bash
 $ git clone --recursive https://github.com/umd-mith/angles.git
 ```
 
@@ -48,7 +48,7 @@ source code:
 * grunt (see [the `grunt` getting started guide](http://gruntjs.com/getting-started))
 * bower
 
-```
+``` bash
 $ npm install -g grunt-cli
 $ npm install -g bower
 ```
@@ -62,7 +62,7 @@ You also need the following Node packages intalled via `npm`:
 * rimraf
 * shelljs
 
-```
+``` bash
 $ npm install grunt-contrib-uglify
 $ npm install grunt-contrib-clean
 $ npm install grunt-contrib-qunit
@@ -73,7 +73,7 @@ $ npm install shelljs
 
 You can also install these dependencies by running
 
-```
+``` bash
 $ npm install
 ```
 
@@ -83,7 +83,7 @@ in your clone of the repository.
 
 To build the plugins for ACE, run the following command:
 
-```
+``` bash
 $ grunt
 ```
 
@@ -97,7 +97,7 @@ The tests assume that you have installed the required dependencies using `bower`
 
 You may run tests without a browser using `grunt` if you have [PhantomJS](http://phantomjs.org/) installed.
 
-```
+``` bash
 $ grunt test
 ```
 
@@ -112,7 +112,7 @@ Refer to the demos for examples to set up the various components. A minimal inst
 
 When built, the main plugin will be in `dist/angles.js`. You may also install the most recent distribution using `bower`. (See [bower.io](http://bower.io/#installing-bower) for information on installing and using `bower`.)
 
-```
+``` bash
 $ bower install angles-tei
 ```
 
@@ -124,7 +124,7 @@ ANGLES has a number of JavaScript libraries on which it depends. These may be in
 
 To use `grunt` to manage `bower` and install all dependencies, both required and optional, run:
 
-```
+``` bash
 $ grunt install-deps
 ```
 
@@ -134,13 +134,13 @@ You may download the primary dependencies using `bower` or download your own. (S
 
 From the top directory of the repository, you may run `bower`:
 
-```
+``` bash
 $ bower install
 ```
 
 or
 
-```
+``` bash
 $ bower install jQuery
 $ bower install ace-builds
 $ bower install underscore
@@ -158,7 +158,7 @@ This will install the dependencies into `bower_components`.
 
 The following dependencies are optional and are not included in the `bower` configuration:
 
-```
+``` bash
 $ bower install Backbone.localStorage
 $ bower install FileSaver
 ```
@@ -172,7 +172,7 @@ A number of demonstrations are available in the `demo/` directory. See [the READ
 
 You can ensure everything is built and dependencies are downloaded by running
 
-```
+``` bash
 $ grunt demo
 ```
 
@@ -182,12 +182,13 @@ This will also print out a list of demonstration files that you may open in your
 
 After building ANGLES or installing JavaScript libraries with `bower`, you can clean the `dist/` and `bower_components/` directories by running:
 
-```
+``` bash
 $ grunt clean
 ```
 
 To remove any locally installed node modules, you may run:
 
-```
+``` bash
 $ grunt real-clean
 ```
+
