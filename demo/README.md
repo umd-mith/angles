@@ -4,7 +4,7 @@ The HTML pages in this directory demonstrate how to use Angles with a number of 
 
 To install all of the dependencies and build the ANGLES library, you can install the required node libraries and then run the 'demo' grunt task:
 
-```
+``` bash
 $ npm install -g grunt-cli
 $ npm install
 $ grunt demo
