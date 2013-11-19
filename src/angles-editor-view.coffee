@@ -200,13 +200,13 @@ window.Angles = {}
       # Load ace modules #
 
       ace.config.set("basePath", "../deps/")      
-      ace.config.loadModule 'ext/angles', () =>
+      ace.config.loadModule 'ext/angles', =>
 
         @$editor.setOptions
           enableODDAutocompletion: true
 
         completer = 
-          getCompletions: (editor, session, pos, prefix, callback) => 
+          getCompletions: (editor, session, pos, prefix, callback) =>   
             if @$context?
               context = this.$context
 
@@ -217,42 +217,47 @@ window.Angles = {}
                 isClosingTag = false
 
                 finalTag = ''
+                maxRow = editor.getSession().getLength() + 100
 
-                _scanRow = (row, column) ->            
+                _scanRow = (row, column) ->
+                  return if row > maxRow
                   curColumn = 0
                   tokens = editor.getSession().getTokens(row)
-                  
                   for token in tokens
-                    curColumn += token.value.length;
-                    if curColumn > column
-                      if token.type == "meta.tag" and token.value == "<"
-                        isOpeningTag = true
-                      else if token.type == "meta.tag" and token.value == "</"
-                        isClosingTag = true
-                      else if token.type == "meta.tag.r" and token.value == "/>"
-                        openTags.pop()
-                        isOpeningTag = false
-                        isClosingTag = false
-                      else if token.type == "meta.tag.tag-name" and isOpeningTag
-                        openTags.push(token.value)
-                        isOpeningTag = false
-                      else if token.type == "meta.tag.tag-name" && isClosingTag
-                        closedTags.push(token.value)
-                        isClosingTag = false
+                    curColumn += token.value.length
 
-                  if closedTags.length == 0 
-                    _scanRow(row+1, 0)
-                  else if closedTags.length == 1 and openTags.length == 0
-                    finalTag = closedTags[closedTags.length-1]
-                  else  
-                    i = openTags.length 
-                    while i--
-                      if closedTags[closedTags.length-1] == openTags[i]
-                        openTags.splice(i)
-                        closedTags.pop()
-                        _scanRow(row+1, 0)
-                      else 
-                        finalTag = closedTags[closedTags.length-1]
+                    if curColumn > column
+                      switch
+                        when token.type == "meta.tag" and token.value == "<"
+                          isOpeningTag = true
+                        when token.type == "meta.tag" and token.value == "</"
+                          isClosingTag = true
+                        when token.type == "meta.tag.r" and token.value == "/>"
+                          openTags.pop()
+                          isOpeningTag = false
+                          isClosingTag = false
+                        when token.type == "meta.tag.tag-name" and isOpeningTag
+                          openTags.push(token.value)
+                          isOpeningTag = false
+                        when token.type == "meta.tag.tag-name" and isClosingTag
+                          #finalTag = token.value
+                          closedTags.push(token.value)
+                          isClosingTag = false
+
+                  switch
+                    when closedTags.length == 0
+                      _scanRow(row+1, 0)
+                    when closedTags.length == 1 and openTags.length == 0
+                      finalTag = closedTags[0]
+                    else  
+                      openTags.reverse()
+                      for tag in openTags
+                        pos = closedTags.lastIndexOf tag
+                        if pos >= 0
+                          closedTags.splice(pos)
+
+                      if finalTag == "" and closedTags.length > 0
+                        finalTag = closedTags[0]
 
                 _scanRow(row, column)
                 finalTag
@@ -279,7 +284,6 @@ window.Angles = {}
                 callback null, completions
             else
               0 #console.log 'Context Help component not loaded'  
-
         @$editor.completers = [completer]
 
         ace.config.on "desc", (e) =>

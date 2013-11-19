@@ -74,7 +74,7 @@ module.exports = function(grunt) {
     shell.exec('bower install FileSaver');
   });
 
-  grunt.registerTask('demo', 'Install all dependencies and provide a list of demo files', ['default', 'install', 'demo:files' ]);
+  grunt.registerTask('demo', 'Install all dependencies and provide a list of demo files', ['default', 'install-deps', 'demo:files' ]);
   grunt.registerTask('demo:files', "List available demonstration files.", function() {
     console.log("demo/index.html");
     console.log("demo/srvValidation.html");
