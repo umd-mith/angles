@@ -45,7 +45,7 @@ if define?
     snippetManager = require("ace/snippets").snippetManager
     Autocomplete = require("ace/autocomplete").Autocomplete
     config = require("ace/config")
-    
+
     textCompleter = require("ace/autocomplete/text_completer");
     keyWordCompleter =
       getCompletions: (editor, session, pos, prefix, callback) ->
@@ -67,7 +67,7 @@ if define?
         completions = []
         [scope, "_"].forEach (scope) =>
           snippets = snippetMap[scope] || []
-          for i in [snippets.length..0]
+          for i in [snippets.length-1..0]
             s = snippets[i]
             if s.tabTrigger and s.tabTrigger.indexOf(prefix) == 0
               completions.push
@@ -145,17 +145,18 @@ if define?
   ], (require, exports, module) ->
 
     lang = require("./lib/lang")
-    Range = require("./range").Range
+    Range = require("ace/range").Range
     HashHandler = require("./keyboard/hash_handler").HashHandler
     Tokenizer = require("./tokenizer").Tokenizer
     comparePoints = Range.comparePoints
 
-    SnippetManager = ->
-      @snippetMap = {}
-      @snippetNameMap = {}
+    class SnippetManager
+      constructor: ->
+        @snippetMap = {}
+        @snippetNameMap = {}
+        @variables = {}
 
-    ( ->
-      @getTokenizer = ->
+      getTokenizer: ->
         TabstopToken = (str, _, stack) ->
           str = str.substr(1)
           if /^\d+$/.test(str) and not stack.inFormatString
@@ -278,10 +279,10 @@ if define?
         SnippetManager.prototype.getTokenizer = -> SnippetManager.$tokenizer
         SnippetManager.$tokenizer
 
-      @tokenizeTmSnippet = (str, startState) ->
+      tokenizeTmSnippet: (str, startState) ->
         @getTokenizer().getLineTokens(str, startState).tokens.map (x) -> x.value or x
 
-      @$getDefaultValue = (editor, name) ->
+      $getDefaultValue: (editor, name) ->
         switch
           when /^[A-Z]\d+$/.test(name)
             i = name.substr(1)
@@ -315,14 +316,13 @@ if define?
               when "FULLNAME"
                 "Ace"
    
-      @variables = {}
-      @getVariableValue = (editor, varName) ->
+      getVariableValue: (editor, varName) ->
         if @variables.hasOwnProperty(varName)
           @variables[varName](editor, varName) or ""
         else
           @$getDefaultValue(editor, varName) or ""
 
-      @tmStrFormat = (str, ch, editor) ->
+      tmStrFormat: (str, ch, editor) ->
         flag = ch.flag or ""
         re = ch.guard
         re = new RegExp(re, flag.replace(/[^gi]/, ""))
@@ -356,7 +356,7 @@ if define?
         @variables.__ = null
         formatted
 
-      @resolveVariables = (snippet, editor) ->
+      resolveVariables: (snippet, editor) ->
           result = []
 
           gotoNext = (ch) ->
@@ -396,7 +396,7 @@ if define?
 
           result
 
-      @insertSnippet = (editor, snippetText) ->
+      insertSnippet: (editor, snippetText) ->
         cursor = editor.getCursorPosition()
         line = editor.session.getLine(cursor.row)
         indentString = line.match(/^\s*/)[0]
@@ -470,7 +470,7 @@ if define?
         tabstopManager.addTabstops(tabstops, range.start, end)
         tabstopManager.tabNext()
 
-      @$getScope = (editor) ->
+      $getScope: (editor) ->
         scope = editor.session.$mode.$id or ""
         scope = scope.split("/").pop()
         if editor.session.$mode.$modes
@@ -485,7 +485,7 @@ if define?
               scope = "php"
         scope
 
-      @expandWithTab = (editor) ->
+      expandWithTab: (editor) ->
           cursor = editor.getCursorPosition()
           line = editor.session.getLine(cursor.row)
           before = line.substring(0, cursor.column)
@@ -513,8 +513,8 @@ if define?
             @variables.M__ = @variables.T__ = null
             true
 
-      @findMatchingSnippet = (snippetList, before, after) ->
-        for i in [snippetList.length..0]
+      findMatchingSnippet: (snippetList, before, after) ->
+        for i in [snippetList.length-1..0]
           s = snippetList[i]
           if s.startRe and not s.startRe.test(before)
             continue
@@ -529,9 +529,8 @@ if define?
           s.replaceAfter =  if s.endTriggerRe then s.endTriggerRe.exec(after)[0] else  ""
           return s
 
-      @snippetMap = {}
-      @snippetNameMap = {}
-      @register = (snippets, scope) ->
+     
+      register: (snippets, scope) ->
           snippetMap = @snippetMap
           snippetNameMap = @snippetNameMap
           self = @
@@ -589,7 +588,7 @@ if define?
           else if Array.isArray(snippets)
             snippets.forEach addSnippet
 
-      @unregister = (snippets, scope) ->
+      unregister: (snippets, scope) ->
         snippetMap = @snippetMap
         snippetNameMap = @snippetNameMap
 
@@ -607,7 +606,7 @@ if define?
         else if Array.isArray snippets
           snippets.forEach removeSnippet
 
-      @parseSnippetFile = (str) ->
+      parseSnippetFile: (str) ->
         str = str.replace(/\r/, "")
         list = []
         snippet = {}
@@ -642,7 +641,7 @@ if define?
    
         list
 
-      @getSnippetByName = (name, editor) ->
+      getSnippetByName: (name, editor) ->
         scope = editor and @$getScope(editor)
         snippetMap = @snippetNameMap
         [scope, "_"].some (scope) =>
@@ -652,10 +651,8 @@ if define?
           not not snippet
         snippet
 
-    ).call SnippetManager.prototype
-
-
-    TabstopManager = (editor) ->
+    class TabstopManager 
+      constructor: (editor) ->
         if editor.tabstopManager
           editor.tabstopManager
         else
@@ -665,9 +662,14 @@ if define?
           @$onChangeSession = @onChangeSession.bind(@)
           @$onAfterExec = @onAfterExec.bind(@)
           @attach(editor)
+        @keyboardHandler = new HashHandler()
+        @keyboardHandler.bindKeys
+          "Tab"      : (ed) -> ed.tabstopManager.tabNext(1)
+          "Shift-Tab": (ed) -> ed.tabstopManager.tabNext(-1)
+          "Esc"      : (ed) -> ed.tabstopManager.detach()
+          "Return"   : (ed) -> false
 
-    (->
-      @attach = (editor) ->
+      attach: (editor) ->
         @index = -1
         @ranges = []
         @tabstops = []
@@ -680,7 +682,7 @@ if define?
         @editor.commands.on("afterExec", @$onAfterExec)
         @editor.keyBinding.addKeyboardHandler(@keyboardHandler)
 
-      @detach = ->
+      detach: ->
         @tabstops.forEach(@removeTabstopMarkers, @)
         @ranges = null
         @tabstops = null
@@ -693,7 +695,7 @@ if define?
         @editor.tabstopManager = null
         @editor = null
 
-      @onChange = (e) ->
+      onChange: (e) ->
         changeRange = e.data.range
         isRemove = e.data.action[0] == "r"
         start = changeRange.start
@@ -741,13 +743,13 @@ if define?
         if not ranges.length
           @detach()
 
-      @updateLinkedFields = ->
+      updateLinkedFields: ->
         ts = @selectedTabstop
         if ts.hasLinkedRanges
           @$inChange = true
           session = @editor.session
           text = session.getTextRange(ts.firstNonLinked)
-          for i in [ts.length...0]
+          for i in [ts.length-1...0]
             range = ts[i]
             continue if not range.linked
 
@@ -755,16 +757,16 @@ if define?
             session.replace(range, fmt)
           @$inChange = false
 
-      @onAfterExec = (e) ->
+      onAfterExec: (e) ->
         if e.command and not e.command.readOnly
           @updateLinkedFields()
 
-      @onChangeSelection = ->
+      onChangeSelection: ->
         if @editor
           lead = @editor.selection.lead
           anchor = @editor.selection.anchor
           isEmpty = @editor.selection.isEmpty()
-          for i in [@ranges.length...0]
+          for i in [@ranges.length-1..0]
             continue if @ranges[i].linked
 
             containsLead = @ranges[i].contains(lead.row, lead.column)
@@ -772,9 +774,9 @@ if define?
             return if containsLead and containsAnchor
           @detach()
     
-      @onChangeSession = -> @detach()
+      onChangeSession: -> @detach()
 
-      @tabNext = (dir) ->
+      tabNext: (dir) ->
         max = @tabstops.length - 1
         index = @index + (dir or 1)
         index = Math.min( Math.max(index, 0), max )
@@ -782,18 +784,17 @@ if define?
         if index == max
           @detach()
 
-      @selectTabstop = (index) ->
+      selectTabstop: (index) ->
         ts = @tabstops[@index]
-        if ts
-          @addTabstopMarkers(ts)
+        @addTabstopMarkers(ts) if ts
         @index = index
         ts = @tabstops[@index]
         if ts?.length
           @selectedTabstop = ts
           if not @editor.inVirtualSelectionMode    
             sel = @editor.multiSelect
-            sel.toSingleRange(ts.firstNonLinked.clone())
-            for i in [ts.length...0]
+            sel.toSingleRange ts.firstNonLinked.clone() if ts.hasLinkedRanges
+            for i in [ts.length-1..0]
               continue if ts.hasLinkedRanges and ts[i].linked
               sel.addRange(ts[i].clone(), true)
           else
@@ -801,7 +802,7 @@ if define?
           
           @editor.keyBinding.addKeyboardHandler(@keyboardHandler)
 
-      @addTabstops = (tabstops, start, end) ->
+      addTabstops: (tabstops, start, end) ->
         if not tabstops[0]
           p = Range.fromPoints(end, end)
           moveRelative(p.start, start)
@@ -814,7 +815,7 @@ if define?
         ranges = @ranges
         editor = @editor
         tabstops.forEach (ts) =>
-          for i in [ts.length...0]
+          for i in [ts.length-1...0]
             p = ts[i]
             range = Range.fromPoints(p.start, p.end or p.start)
             movePoint(range.start, start)
@@ -837,33 +838,24 @@ if define?
         arg.push arg.splice(2, 1)[0]
         @tabstops.splice.apply(@tabstops, arg)
 
-      @addTabstopMarkers = (ts) ->
+      addTabstopMarkers: (ts) ->
         session = @editor.session
         ts.forEach (range) ->
           if not range.markerId
             range.markerId = session.addMarker(range, "ace_snippet-marker", "text")
 
-      @removeTabstopMarkers = (ts) ->
+      removeTabstopMarkers: (ts) ->
         session = @editor.session
         ts.forEach (range) ->
           session.removeMarker(range.markerId)
           range.markerId = null
 
-      @removeRange = (range) ->
+      removeRange: (range) ->
         i = range.tabstop.indexOf(range)
         range.tabstop.splice(i, 1)
         i = @ranges.indexOf(range)
         @ranges.splice(i, 1)
         @editor.session.removeMarker(range.markerId)
-
-      @keyboardHandler = new HashHandler()
-      @keyboardHandler.bindKeys
-          "Tab"      : (ed) -> ed.tabstopManager.tabNext(1)
-          "Shift-Tab": (ed) -> ed.tabstopManager.tabNext(-1)
-          "Esc"      : (ed) -> ed.tabstopManager.detach()
-          "Return"   : (ed) -> false
-    ).call TabstopManager.prototype
-
 
     movePoint = (point, diff) ->
       if point.row == 0
@@ -874,7 +866,6 @@ if define?
       if point.row == start.row
         point.column -= start.column
       point.row -= start.row
-
 
     require("./lib/dom").importCssString("""
       .ace_snippet-marker {
@@ -887,6 +878,7 @@ if define?
     """);
 
     exports.snippetManager = new SnippetManager()
+    exports
 
   define 'ace/autocomplete', [
     'require'
@@ -907,25 +899,28 @@ if define?
     lang = require("./lib/lang")
     snippetManager = require("./snippets").snippetManager
 
-    Autocomplete = ->
-      @keyboardHandler = new HashHandler()
-      @keyboardHandler.bindKeys(@commands)
+    class Autocomplete
+      constructor: ->
+        @keyboardHandler = new HashHandler()
+        @keyboardHandler.bindKeys(@commands)
 
-      @blurListener = @blurListener.bind(@)
-      @changeListener = @changeListener.bind(@)
-      @mousedownListener = @mousedownListener.bind(@)
-      @mousewheelListener = @mousewheelListener.bind(@)
-      
-      @changeTimer = lang.delayedCall => @updateCompletions(true)
+        @blurListener = @blurListener.bind(@)
+        @changeListener = @changeListener.bind(@)
+        @mousedownListener = @mousedownListener.bind(@)
+        @mousewheelListener = @mousewheelListener.bind(@)
+        # Possible issue: delayedCall is being called repeatedly when a key is pressed and the '<' added to the text
+        # might be causing a problem.
+        @changeTimer = lang.delayedCall => 
+          @updateCompletions(true)
+        #@changeTimer.cancel()
 
-    (->
-      @$init = ->
-        @popup = new AcePopup(document.body or document.documentElement)
+      $init: ->
+        @popup = AcePopup(document.body or document.documentElement)
         @popup.on "click", (e) =>
           @insertMatch()
           e.stop()
 
-      @openPopup = (editor, keepPopupPosition) ->
+      openPopup: (editor, keepPopupPosition) ->
         if not @popup
           @$init()
 
@@ -947,7 +942,7 @@ if define?
           @popup.show(pos, lineHeight)
         renderer.updateText()
 
-      @detach = ->
+      detach: ->
         @editor.keyBinding.removeKeyboardHandler(@keyboardHandler)
         @editor.removeEventListener("changeSelection", @changeListener)
         @editor.removeEventListener("blur", @changeListener)
@@ -958,21 +953,21 @@ if define?
 
         @activated = false
 
-      @changeListener = (e) ->
+      changeListener: (e) ->
         if @activated
           @changeTimer.schedule()
         else
           @detach()
 
-      @blurListener = ->
+      blurListener: ->
         if document.activeElement != @editor.textInput.getElement()
           @detach()
 
-      @mousedownListener = (e) -> @detach()
+      mousedownListener: (e) -> @detach()
 
-      @mousewheelListener = (e) -> @detach()
+      mousewheelListener: (e) -> @detach()
 
-      @goTo = (where) ->
+      goTo: (where) ->
         row = @popup.getRow()
         max = @popup.session.getLength() - 1
 
@@ -984,7 +979,7 @@ if define?
 
         @popup.setRow(row)
 
-      @insertMatch = (data) ->
+      insertMatch: (data) ->
         @detach()
         data ?= @popup.getData(@popup.getRow())
         if not data
@@ -1002,7 +997,7 @@ if define?
           else
             @editor.insert(data.value or data)
 
-      @commands =
+      commands:
         "Up"                : (editor) -> editor.completer.goTo("up")
         "Down"              : (editor) -> editor.completer.goTo("down")
         "Ctrl-Up|Ctrl-Home" : (editor) -> editor.completer.goTo("start")
@@ -1019,7 +1014,7 @@ if define?
         "PageUp"            : (editor) -> editor.completer.popup.gotoPageDown()
         "PageDown"          : (editor) -> editor.completer.popup.gotoPageUp()
 
-      @gatherCompletions = (editor, callback) ->
+      gatherCompletions: (editor, callback) ->
         session = editor.getSession()
         pos = editor.getCursorPosition()
 
@@ -1041,7 +1036,7 @@ if define?
 
         true
 
-      @showPopup = (editor) ->
+      showPopup: (editor) ->
         if @editor
           @detach()
         
@@ -1054,32 +1049,31 @@ if define?
           editor.completer = @
 
         editor.keyBinding.addKeyboardHandler(@keyboardHandler)
-        editor.on("changeSelection", @changeListener)
+        #editor.on("changeSelection", @changeListener)
         editor.on("blur", @blurListener)
         editor.on("mousedown", @mousedownListener)
         @updateCompletions()
+        @changeTimer.cancel()
       
-      @updateCompletions = (keepPopupPosition) ->
+      updateCompletions: (keepPopupPosition) ->
           @gatherCompletions @editor, (err, results) =>
-            matches = results and results.matches;
+            matches = results?.matches
             
             if matches?.length
               @completions = new FilteredList(matches)
               @completions.setFilter(results.prefix)
               @openPopup(@editor, keepPopupPosition)
-              # @popup.setHighlight(results.prefix)
+              #@popup.setHighlight(results.prefix)
             else
               @detach()
 
-      @cancelContextMenu = ->
+      cancelContextMenu: ->
         stop = (e) =>
           @editor.off("nativecontextmenu", stop)
           if e?.domEvent
             event.stopEvent(e.domEvent)
         setTimeout(stop, 10)
         @editor.on("nativecontextmenu", stop)
-
-    ).call Autocomplete.prototype
 
     Autocomplete.startCommand =
       name: "startAutocomplete"
@@ -1092,15 +1086,14 @@ if define?
         editor.getSession().insert(editor.getCursorPosition(), '<')
       bindKey: "<"
 
-    FilteredList = (array, mutateData) ->
-      @all = array;
-      @filtered = array.concat()
-      @filterText = ""
+    class FilteredList
+      constructor: (array, mutateData) ->
+        @all = array;
+        @filtered = array.concat()
+        @filterText = ""
 
-    (->
-      @setFilter = (str) ->
+      setFilter: (str) ->
         @filterText = str
-    ).call FilteredList.prototype
 
     exports.Autocomplete = Autocomplete
     exports.FilteredList = FilteredList
@@ -1308,6 +1301,7 @@ if define?
     """)
 
     exports.AcePopup = AcePopup
+    exports
 
   define 'ace/autocomplete/util', [
     'require'
@@ -1320,8 +1314,8 @@ if define?
       arLength = array.length
       if arLength == 0
         callback()
-      for i in [0..arLength]
-        fn array[i], (result, err) ->
+      for completer in array
+        fn completer, (result, err) ->
           completed++
           if completed == arLength
             callback(result, err)
@@ -1348,6 +1342,7 @@ if define?
           else
               break;
         buf
+    exports
 
   define 'ace/autocomplete/text_completer', [
     'require'
@@ -1355,44 +1350,45 @@ if define?
     'module'
     'ace/range'
   ], (require, exports, module) ->
-      Range = require("ace/range").Range
+    Range = require("ace/range").Range
+    
+    splitRegex = /[^a-zA-Z_0-9\$\-]+/
+
+    getWordIndex = (doc, pos) ->
+      textBefore = doc.getTextRange(Range.fromPoints({row: 0, column:0}, pos))
+      textBefore.split(splitRegex).length - 1
+
+    filterPrefix = (prefix, words) ->
+      results = []
+      for i in [0...words.length]
+        if words[i].lastIndexOf(prefix, 0) == 0
+          results.push words[i]
+      results
+
+    wordDistance = (doc, pos) ->
+      prefixPos = getWordIndex(doc, pos)
+      words = doc.getValue().split(splitRegex)
+      wordScores = Object.create(null)
       
-      splitRegex = /[^a-zA-Z_0-9\$\-]+/
+      currentWord = words[prefixPos]
 
-      getWordIndex = (doc, pos) ->
-        textBefore = doc.getTextRange(Range.fromPoints({row: 0, column:0}, pos))
-        textBefore.split(splitRegex).length - 1
+      words.forEach (word, idx) ->
+        if word and word isnt currentWord
+          distance = Math.abs(prefixPos - idx)
+          score = words.length - distance
 
-      filterPrefix = (prefix, words) ->
-        results = []
-        for i in [0...words.length]
-          if words[i].lastIndexOf(prefix, 0) == 0
-            results.push words[i]
-        results
+          wordScores[word] = if wordScores[word] then Math.max(score, wordScores[word]) else score
+          
+      wordScores
 
-      wordDistance = (doc, pos) ->
-        prefixPos = getWordIndex(doc, pos)
-        words = doc.getValue().split(splitRegex)
-        wordScores = Object.create(null)
-        
-        currentWord = words[prefixPos]
-
-        words.forEach (word, idx) ->
-          if word and word != currentWord
-            distance = Math.abs(prefixPos - idx)
-            score = words.length - distance
-
-            wordScores[word] = if wordScores[word] then Math.max(score, wordScores[word]) else score
-            
-        wordScores
-
-      exports.getCompletions = (editor, session, pos, prefix, callback) ->
-        wordScore = wordDistance(session, pos, prefix)
-        wordList = filterPrefix(prefix, Object.keys(wordScore))
-        callback null, wordList.map (word) ->
-          {
-            name: word
-            value: word
-            score: wordScore[word]
-            meta: "local"
-          }
+    exports.getCompletions = (editor, session, pos, prefix, callback) ->
+      wordScore = wordDistance(session, pos, prefix)
+      wordList = filterPrefix(prefix, Object.keys(wordScore))
+      callback null, wordList.map (word) ->
+        {
+          name: word
+          value: word
+          score: wordScore[word]
+          meta: "local"
+        }
+    exports
