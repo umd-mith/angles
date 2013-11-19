@@ -69,8 +69,11 @@ module.exports = function(grunt) {
       console.log("Sorry, this script requires bower.");
       exit(1);
     }
+    console.log("Running 'bower install'");
     shell.exec('bower install');
+    console.log("Running 'bower install Backbone.localStorage'");
     shell.exec('bower install Backbone.localStorage');
+    console.log("Running 'bower install FileSaver'");
     shell.exec('bower install FileSaver');
   });
 
