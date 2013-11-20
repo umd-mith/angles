@@ -466,9 +466,9 @@ if define?
         range = editor.getSelectionRange()
         end = editor.session.replace(range, text)
 
-        tabstopManager = new TabstopManager(editor)
-        tabstopManager.addTabstops(tabstops, range.start, end)
-        tabstopManager.tabNext()
+        #tabstopManager = new TabstopManager(editor)
+        #tabstopManager.addTabstops(tabstops, range.start, end)
+        #tabstopManager.tabNext()
 
       $getScope: (editor) ->
         scope = editor.session.$mode.$id or ""
@@ -1248,8 +1248,8 @@ if define?
         popup.session._emit("changeFrontMarker")
 
       popup.hide = ->
-        @container.style.display = "none"
-        @_signal("hide")
+        popup.container.style.display = "none"
+        popup._signal("hide")
         ace.config._signal("desc:clear")
 
       popup.show = (pos, lineHeight) ->
@@ -1264,9 +1264,9 @@ if define?
 
         el.style.left = pos.left + "px"
         el.style.display = ""
-        @renderer.$textLayer.checkForSizeChanges()
+        popup.renderer.$textLayer.checkForSizeChanges()
 
-        @_signal("show")
+        popup._signal("show")
 
       popup
 
