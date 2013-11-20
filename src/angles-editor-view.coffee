@@ -199,7 +199,7 @@ window.Angles = {}
 
       # Load ace modules #
 
-      ace.config.set("basePath", "../deps/")      
+      #ace.config.set("basePath", "../deps/")      
       ace.config.loadModule 'ext/angles', =>
 
         @$editor.setOptions

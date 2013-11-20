@@ -242,7 +242,6 @@
           return _this.dispatcher.trigger('editor:change', e);
         });
         this.$editor.getSession().setMode("ace/mode/xml");
-        ace.config.set("basePath", "../deps/");
         ace.config.loadModule('ext/angles', function() {
           var completer;
           _this.$editor.setOptions({
@@ -884,7 +883,7 @@
         };
 
         SnippetManager.prototype.insertSnippet = function(editor, snippetText) {
-          var column, cursor, end, indentString, line, range, row, tabString, tabstopManager, tabstops, text, tokens;
+          var column, cursor, end, indentString, line, range, row, tabString, tabstops, text, tokens;
           cursor = editor.getCursorPosition();
           line = editor.session.getLine(cursor.row);
           indentString = line.match(/^\s*/)[0];
@@ -965,10 +964,7 @@
             }
           });
           range = editor.getSelectionRange();
-          end = editor.session.replace(range, text);
-          tabstopManager = new TabstopManager(editor);
-          tabstopManager.addTabstops(tabstops, range.start, end);
-          return tabstopManager.tabNext();
+          return end = editor.session.replace(range, text);
         };
 
         SnippetManager.prototype.$getScope = function(editor) {
@@ -1900,8 +1896,8 @@
           return popup.session._emit("changeFrontMarker");
         };
         popup.hide = function() {
-          this.container.style.display = "none";
-          this._signal("hide");
+          popup.container.style.display = "none";
+          popup._signal("hide");
           return ace.config._signal("desc:clear");
         };
         popup.show = function(pos, lineHeight) {
@@ -1916,8 +1912,8 @@
           }
           el.style.left = pos.left + "px";
           el.style.display = "";
-          this.renderer.$textLayer.checkForSizeChanges();
-          return this._signal("show");
+          popup.renderer.$textLayer.checkForSizeChanges();
+          return popup._signal("show");
         };
         return popup;
       };
