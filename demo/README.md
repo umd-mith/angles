@@ -12,11 +12,17 @@ $ grunt demo
 
 This will run through various installation procedures and end by printing out a list of available demonstration files.
 
-See the [top-level README](../README.md) for motr information on installing grunt and associated dependencies.
+See the [top-level README](../README.md) for more information on installing grunt and associated dependencies.
 
 ## `index.html`
 
-The basic demonstration shows how to use Angles with the optional file upload/download components but without any server-side components.
+This basic demonstration shows all features of Angles that do no need any server-side component. With this kind of set up, one could use Angles offline, or embed it into a website as a TEI editor. Angles will perform basic TEI-Lite validation, allow users to save their work in the browser, and save and load files from disk. The following sections will guide you through each component.
+
+### The Demo Interface
+
+If the installation was completed correctly, the page will show an editable basic TEI file, a group of button on the left to save and load documents, and a validation button on top.
+
+
 
 ### Contextual help
 
@@ -53,3 +59,5 @@ This demonstration uses the `rng.js` JSON file as the JavaScript-friendly repres
 This demonstrates how to hook to an online validation service. During development we used [a simple Scalatra service](https://github.com/travisbrown/validation-demo). 
 
 If you want to use a different service or implement your own, you might need to override `Angles.ValidatorSRV.requestHandler` and `Angles.ValidatorSRV.validationHandler` to send the right request to your server.
+
+[start]: img/readme_start.png "Angles demo interface"
