@@ -253,67 +253,87 @@
               if (_this.$context != null) {
                 context = _this.$context;
                 _findParent = function(row, column) {
-                  var closedTags, finalTag, isClosingTag, isOpeningTag, maxRow, openTags, _scanRow;
+                  var allTags, closedTags, finalTag, isClosingTag, isOpeningTag, maxRow, openTags, _scanRow;
                   openTags = [];
                   closedTags = [];
+                  allTags = [];
                   isOpeningTag = false;
                   isClosingTag = false;
                   finalTag = '';
-                  maxRow = editor.getSession().getLength() + 100;
+                  maxRow = editor.getSession().getLength();
                   _scanRow = function(row, column) {
-                    var curColumn, tag, token, tokens, _i, _j, _len, _len1;
+                    var curColumn, isfinal, lastTag, latestTag, milestone, token, tokens, _i, _len;
                     if (row > maxRow) {
                       return;
                     }
                     curColumn = 0;
                     tokens = editor.getSession().getTokens(row);
+                    lastTag = null;
                     for (_i = 0, _len = tokens.length; _i < _len; _i++) {
                       token = tokens[_i];
                       curColumn += token.value.length;
+                      isfinal = function() {
+                        switch (false) {
+                          case openTags.length !== 0:
+                            return true;
+                          case openTags.length !== closedTags.length:
+                            openTags.pop();
+                            closedTags.pop();
+                            return false;
+                          case openTags[openTags.length - 1] !== closedTags[closedTags.length - 1]:
+                            openTags.pop();
+                            closedTags.pop();
+                            return false;
+                          default:
+                            return false;
+                        }
+                      };
+                      if (token.type === "meta.tag.tag-name") {
+                        latestTag = token.value;
+                      }
                       if (curColumn > column) {
                         switch (false) {
                           case !(token.type === "meta.tag" && token.value === "<"):
                             isOpeningTag = true;
                             break;
+                          case !(token.type === "meta.tag.r" && token.value === ">" && openTags.length === 0):
+                            return latestTag;
                           case !(token.type === "meta.tag" && token.value === "</"):
                             isClosingTag = true;
                             break;
                           case !(token.type === "meta.tag.r" && token.value === "/>"):
-                            openTags.pop();
                             isOpeningTag = false;
                             isClosingTag = false;
+                            milestone = openTags[openTags.length - 1];
+                            if (milestone == null) {
+                              milestone = latestTag;
+                            }
+                            closedTags.push(milestone);
+                            if (isfinal()) {
+                              return milestone;
+                            }
                             break;
                           case !(token.type === "meta.tag.tag-name" && isOpeningTag):
+                            allTags.push("<" + token.value + ">");
                             openTags.push(token.value);
                             isOpeningTag = false;
+                            if (isfinal()) {
+                              return token.value;
+                            }
                             break;
                           case !(token.type === "meta.tag.tag-name" && isClosingTag):
+                            allTags.push("</" + token.value + ">");
                             closedTags.push(token.value);
                             isClosingTag = false;
+                            if (isfinal()) {
+                              return token.value;
+                            }
                         }
                       }
                     }
-                    switch (false) {
-                      case closedTags.length !== 0:
-                        return _scanRow(row + 1, 0);
-                      case !(closedTags.length === 1 && openTags.length === 0):
-                        return finalTag = closedTags[0];
-                      default:
-                        openTags.reverse();
-                        for (_j = 0, _len1 = openTags.length; _j < _len1; _j++) {
-                          tag = openTags[_j];
-                          pos = closedTags.lastIndexOf(tag);
-                          if (pos >= 0) {
-                            closedTags.splice(pos);
-                          }
-                        }
-                        if (finalTag === "" && closedTags.length > 0) {
-                          return finalTag = closedTags[0];
-                        }
-                    }
+                    return _scanRow(row + 1, 0);
                   };
-                  _scanRow(row, column);
-                  return finalTag;
+                  return _scanRow(row, column);
                 };
                 pos = editor.getCursorPosition();
                 ident = _findParent(pos.row, pos.column);

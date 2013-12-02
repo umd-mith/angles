@@ -213,54 +213,70 @@ window.Angles = {}
               _findParent = (row, column) ->
                 openTags = []
                 closedTags = []
+                allTags = []
                 isOpeningTag = false
                 isClosingTag = false
 
                 finalTag = ''
-                maxRow = editor.getSession().getLength() + 100
+                maxRow = editor.getSession().getLength()
 
                 _scanRow = (row, column) ->
                   return if row > maxRow
                   curColumn = 0
                   tokens = editor.getSession().getTokens(row)
+                  lastTag = null
                   for token in tokens
                     curColumn += token.value.length
+
+                    isfinal = ->
+                      switch
+                        when openTags.length == 0
+                          true
+                        when openTags.length == closedTags.length
+                          openTags.pop()
+                          closedTags.pop()
+                          false
+                        when openTags[openTags.length-1] == closedTags[closedTags.length-1]
+                          openTags.pop()
+                          closedTags.pop()
+                          false
+                        else
+                          false
+
+                    latestTag = token.value if token.type == "meta.tag.tag-name"
 
                     if curColumn > column
                       switch
                         when token.type == "meta.tag" and token.value == "<"
                           isOpeningTag = true
+                        # TODO: return latestTag when cursor is on a closing tag  
+                        when token.type == "meta.tag.r" and token.value == ">" and openTags.length == 0
+                          # The cursor must be on a closing tag, 
+                          # return element value
+                          return latestTag
                         when token.type == "meta.tag" and token.value == "</"
                           isClosingTag = true
                         when token.type == "meta.tag.r" and token.value == "/>"
-                          openTags.pop()
                           isOpeningTag = false
                           isClosingTag = false
+                          milestone = openTags[openTags.length-1]
+                          milestone = latestTag if !milestone?
+                          closedTags.push milestone
+                          return milestone if isfinal()
                         when token.type == "meta.tag.tag-name" and isOpeningTag
-                          openTags.push(token.value)
+                          allTags.push "<#{token.value}>"
+                          openTags.push token.value
                           isOpeningTag = false
+                          return token.value if isfinal()
                         when token.type == "meta.tag.tag-name" and isClosingTag
-                          #finalTag = token.value
-                          closedTags.push(token.value)
+                          allTags.push "</#{token.value}>"
+                          closedTags.push token.value
                           isClosingTag = false
+                          return token.value if isfinal()
 
-                  switch
-                    when closedTags.length == 0
-                      _scanRow(row+1, 0)
-                    when closedTags.length == 1 and openTags.length == 0
-                      finalTag = closedTags[0]
-                    else  
-                      openTags.reverse()
-                      for tag in openTags
-                        pos = closedTags.lastIndexOf tag
-                        if pos >= 0
-                          closedTags.splice(pos)
-
-                      if finalTag == "" and closedTags.length > 0
-                        finalTag = closedTags[0]
+                  _scanRow(row+1, 0)
 
                 _scanRow(row, column)
-                finalTag
 
               pos = editor.getCursorPosition()              
               ident = _findParent(pos.row, pos.column)
