@@ -249,7 +249,9 @@ window.Angles = {}
                       switch
                         when token.type == "meta.tag" and token.value == "<"
                           isOpeningTag = true
-                        # TODO: return latestTag when cursor is on a closing tag  
+                        when token.type == "meta.tag.r" and token.value == ">" and (isOpeningTag or isClosingTag)
+                          isOpeningTag = false
+                          isClosingTag = false
                         when token.type == "meta.tag.r" and token.value == ">" and openTags.length == 0
                           # The cursor must be on a closing tag, 
                           # return element value
@@ -266,12 +268,10 @@ window.Angles = {}
                         when token.type == "meta.tag.tag-name" and isOpeningTag
                           allTags.push "<#{token.value}>"
                           openTags.push token.value
-                          isOpeningTag = false
                           return token.value if isfinal()
                         when token.type == "meta.tag.tag-name" and isClosingTag
                           allTags.push "</#{token.value}>"
                           closedTags.push token.value
-                          isClosingTag = false
                           return token.value if isfinal()
 
                   _scanRow(row+1, 0)
