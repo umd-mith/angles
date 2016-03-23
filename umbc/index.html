@@ -40,6 +40,7 @@
             <div class="navbar-inner">
                 <ul class="nav">
                     <li><a href="#" id="validateSrvAction">Validate via server</a></li>
+                    <li><a href="#" id="renderTEIBP">Render with TEI BoilerPlate</a></li>
                 </ul>
             </div>
         </div>
@@ -363,6 +364,15 @@
         notificationCenter.$notifications.add(notification);
       });
     }
+
+    $("#renderTEIBP").click(function(e){
+      e.preventDefault();
+      sessionStorage.setItem('TEI', angles.getContent());
+      window.open(
+        'teibp.html',
+        '_blank' 
+      );
+    });
 
 </script>
 <!-- We load external RNGs using the schemaSrv(s) function above -->

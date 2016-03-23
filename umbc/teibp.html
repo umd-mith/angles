@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Angles - TEI-BP rendering</title>
+
+  <link rel="stylesheet" href="css/teibp.css">
+  <script src="../bower_components/jquery/jquery.js"></script>
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+</head>
+
+<body>
+  
+  <div id="TEI">
+    
+  </div>
+  <div id=info></div>
+
+<script type="text/javascript">
+var tei = sessionStorage.getItem("TEI");
+if (tei == null) {
+  $("#info").append("<p>No TEI to display.");
+}
+else {
+
+  $("#TEI").append(tei);
+}
+
+</script>
+
+</body>
+</html>
