@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Angles Editor Demo</title>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/jasny-bootstrap.min.css">
+<style type="text/css" media="screen">
+    #editor { 
+        position: relative !important;
+        height: 30em;
+    }
+    body {
+        padding-top: 90px;
+    }
+    #notifications_area {
+      margin-top: 1em;
+    }
+    #status_icon {
+      float:right; 
+      display: inline-block; 
+      width:1.5em; 
+      background-color: #4CC423;
+      border: 1px Solid Black;
+    }
+    .btn-group {
+      margin-bottom: 1em;
+    }
+    .table { margin-bottom: 0; }
+</style>
+</head>
+<body>
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="#"><img src="img/angles_logo_red-trans.png"></a>
+            </div>
+        </div>
+    </div>
+        <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li><a href="#" id="validateSrvAction">Validate via server</a></li>
+                </ul>
+            </div>
+        </div>
+
+    
+
+    <div class="container">
+      <div class="well">Validate with:
+        <div class="btn-group" data-toggle="buttons-radio" id="schema">
+          <button type="button" class="btn active"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_lite.rng">TEI Lite</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_tite.rng">TEI Tite</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_bare.rng">TEI Bare</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_ms.rng">TEI MS Desc</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_drama.rng">TEI Drama</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_odds.rng">TEI ODD</button>
+          <button type="button" class="btn"
+          value="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng">TEI All</button>
+          <button type="button" class="btn"
+          value="https://raw.github.com/TEI-Music-SIG/tei-mei/master/schemata/tei-lite_mei-cmn.rng">TEI Lite + MEI CMN</button>
+        </div>
+      </div>
+
+        <div class="row">
+            <div class="span9">
+              <span id="status_icon">&nbsp;</span>
+            <div id="editor">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;TEI xmlns="http://www.tei-c.org/ns/1.0"&gt;
+  &lt;teiHeader&gt;
+    &lt;fileDesc&gt;
+      &lt;titleStmt&gt;
+        &lt;title&gt;Title&lt;/title&gt;
+      &lt;/titleStmt&gt;
+      &lt;publicationStmt&gt;
+        &lt;p&gt;Publication Information&lt;/p&gt;
+      &lt;/publicationStmt&gt;
+      &lt;sourceDesc&gt;
+        &lt;p&gt;Information about the source&lt;/p&gt;
+      &lt;/sourceDesc&gt;
+    &lt;/fileDesc&gt;
+  &lt;/teiHeader&gt;
+  &lt;text&gt;
+    &lt;body&gt;
+      &lt;p&gt;Some text here.&lt;/p&gt;
+    &lt;/body&gt;
+  &lt;/text&gt;
+&lt;/TEI&gt;</div>
+</div>
+<div class="span3">
+  <h2>Local Storage</h2>
+  <ul class="unstyled">
+    <li><a href="#saveModal" role="button" class="btn" data-toggle="modal">Save to Browser Storage as...</a></li>
+    <li><a id="saveFile" role="button" class="btn">Save to Browser Storage</a></li>
+    <li><a href="#loadModal" role="button" class="btn" data-toggle="modal">Load from Browser Storage</a></li>
+    <li><a id="downloadFile" role="button" class="btn">Download to Disk</a></li>
+  </ul>
+  <div class="fileupload fileupload-new" data-provides="fileupload">
+    <span class="btn btn-file"><span class="fileupload-new">Load from Disk</span><span class="fileupload-exists">Change</span><input type="file" /></span>
+    <span class="fileupload-preview"></span>
+    <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">x</a>
+  </div>
+</div>            
+</div>
+<div class="well" id="notifications_area"></div>
+</div>
+<div id="saveModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3>Save Document As...</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="fileName">Filename</label>
+        <div class="controls">
+          <input type="text" id="fileName" placeholder="file name">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="saveModalAction">Save Document</button>
+  </div>
+</div>
+<div id="loadModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3>Load Document</h3>
+  </div>
+  <div class="modal-body">
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="loadDocumentAction">Load Document</button>
+  </div>
+</div>
+
+<script type="text/template" id="file-list-template">
+  <form class="file-list">
+  </form>
+</script>
+<script type="text/template" id="file-item-template">
+  <label class="checkbox">
+    <input type="radio" name="file" value="<%= id %>"> <%= name %> 
+  </label>
+</script>
+<script type="text/template" id="notification-list-template">
+  <div class="notifications">
+  </div>
+</script>
+<script type="text/template" id="notification-template">
+<table class="table table-bordered table-striped"><tbody>
+  <tr>
+    <td><%= type %></td>
+    <td><%= info %></td>
+    <td><%= message %></td>
+    <% if (location.row >= 0) { %>
+      <td><%= location.row %>:<%= location.column %></td>
+    <% } %>
+  </tr>
+</tbody></table>
+</script>
+<script src="../bower_components/jquery/jquery.js"></script>
+<script src="../bower_components/ace-builds/src/ace.js"></script>
+<script src="../bower_components/underscore/underscore.js"></script>
+<script src="../bower_components/backbone/backbone.js"></script>
+
+<script src="js/bootstrap.js" type="text/javascript" charset="utf-8"></script>    
+<script src="js/jasny-bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="../bower_components/Backbone.localStorage/backbone.localStorage.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="../dist/angles.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+    /*
+     * We create a local storage object and tie it into our document 
+     * collection. We pre-fetch the collection so that we know which 
+     * documents are available.
+     */
+    var localStore = new Backbone.LocalStorage("SomeCollection");
+    var collection = new Angles.XMLDocumentList();
+    collection.localStorage = localStore;
+    collection.fetch();
+
+    /*
+     * We instantiate the editor view and attach it to the DOM element we
+     * want housing the editor.
+     */
+    var angles = new Angles.ACEEditorView({
+      el: "#editor",
+      theme: "ace/theme/monokai",
+    });
+    angles.render();
+    angles.$editor.setTheme("ace/theme/monokai");
+
+    /*
+     * We do the same for the "Validate via server" menu item
+     */
+    $("#validateSrvAction").click(function() {
+      angles.dispatcher.trigger("validation"); 
+    });
+
+    $("body").find("#schema .btn").each(function(){
+      $(this).bind('click', function(){
+        schema($(this).attr("value")); 
+      });
+    });
+
+    /*
+    * We set a server validator 
+    */
+    var validator = new Angles.ValidatorSRV({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+      validator: "http://54.152.33.254:8080/validator/validate",
+    });  
+    function schema(s){ validator.setSchema(s); }
+
+    /*
+     * Set up the notification center
+     */
+    var notificationCenter = new Angles.NotificationCenter({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+    });
+
+
+    /*
+     * We want to keep track of the current document in the editor, so we
+     * listen for events that cause the editor to switch its content to that
+     * of a different document.
+     */
+    var currentModel;
+    angles.dispatcher.on("document:switch", function(m) {
+      currentModel = m;
+    });
+
+    /*
+     * We automatically load the editor with the "first" document in the
+     * collection, for some value of "first".
+     */
+    if(collection.models.length > 0) {
+      angles.dispatcher.trigger("document:switch", collection.models[0]);
+    }
+
+    /*
+     * We only have the editor save its content to the current file if
+     * we have a current model associated with the content. Otherwise, we
+     * have nothing to save to.
+     */
+    $("#saveFile").on('click', function() {
+      if(currentModel != null) {
+        angles.dispatcher.trigger("document:save");
+      }
+    });
+
+    $("#downloadFile").on('click', function() {
+      if(currentModel != null) {
+        var bb = new Blob([currentModel.attributes.content], {"type":"text\/xml"});
+        saveAs(bb, currentModel.attributes.name+'.xml');
+      }
+    });
+
+    /*
+     * These event handlers deal with saving the content to a new named
+     * document in the collection.
+     */
+    $("#saveModal").on('show', function() {
+      if(currentModel != null) {
+        $("#fileName").val(currentModel.name);
+      }
+    });
+
+    $("#saveModalAction").on('click', function() {
+      var newModel = collection.create({
+        name: $("#fileName").val(),
+        content: angles.getContent()
+      });
+      angles.dispatcher.trigger("document:switch", newModel);
+      $("#saveModal").modal("hide");
+    });
+
+    /*
+     * Here, we handle showing the list of files in the local store and
+     * allow selection of one. If we have a model/document to load, we
+     * trigger a "document:switch" event to load in the new model/document.
+     */
+    var selector = new Angles.FileSelector({ collection: collection });
+
+    $("#loadModal").on('show', function() {
+      // we want to show a list of models and allow selection
+      if (selector.collection.length == 0) {
+        $("#loadModal > .modal-body").html("<p>No files saved in Browser Storage yet.</p>");
+      }
+      selector.render().$el.appendTo($("#loadModal > .modal-body"));
+    });
+
+    $("#loadDocumentAction").on('click', function() {
+      var fileId = $("#loadModal > .modal-body input[type='radio'][name='file']:checked").val();
+      var model;
+      if(fileId != null) {
+        $.each(collection.models, function(idx, m) {
+          if(m.attributes.id === fileId) { model = m; }
+        });
+        if(model != null) {
+          angles.dispatcher.trigger("document:switch", model);
+        }
+      }
+      $("#loadModal").modal('hide');
+    });
+
+    /*
+     * Here we hook the file loader input with the FileUploader class
+     */
+    uploader = new Angles.FileUploader({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+      storedFiles: collection 
+    });
+    uploader.bind('.fileupload');
+
+    /* 
+     * Here we use the notification center
+     * for dispatching validation errors and element descriptions from the context help
+     */
+    notifications = new Angles.NotificationTable({collection: notificationCenter.$notifications});
+    notifications.render().$el.appendTo($('#notifications_area'));
+
+    angles.dispatcher.on("validation:end", function(e) {
+      if (notificationCenter.$notifications.length > 0) {
+        $("#status_icon").css("background-color", "Red");
+      }
+      else $("#status_icon").css("background-color", "#4CC423");
+    });
+
+    // Attach the context helper directly to the view
+    angles.$context = new Angles.ContextHelp({
+      dispatcher: angles.dispatcher,
+      anglesView: angles,
+    });
+
+    function teijs(o) { 
+      angles.$context.setODD(o);
+      angles.dispatcher.on("editor:context", function(i) {
+        desc = angles.$context.getDescOf(i);
+        children = angles.$context.getChildrenOf(i);
+        notification = {
+          "type": "Element Description",
+          "info": i,
+          "message": desc,
+          "resource": "",
+          "location": {"column":0, "row":0}
+        }
+        angles.dispatcher.trigger('notification:clear');
+        notificationCenter.$notifications.add(notification);
+      });
+    }
+
+</script>
+<!-- We load external RNGs using the schemaSrv(s) function above -->
+<script type="text/JavaScript" charset="utf-8">
+  schema($('#schema .active').attr("value")); 
+</script>
+<!-- Loading the standard p5 subset for contextual help -->
+<script src="./p5subset.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>
