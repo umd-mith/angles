@@ -652,36 +652,36 @@ handShift {
   /* Empty Rule Set */
 }
 /* Need head with TEI parent to distinguish from HTML head */
-TEI head {
+TEI tei_head {
   display: block;
   font-family: Arvo, sans-serif;
   font-weight: normal;
 }
-body > head {
+body > tei_head {
   font-size: 180%;
   text-indent: -0.5em;
 }
-div > head {
+div > tei_head {
   font-size: 170%;
   text-indent: -0.5em;
 }
-div > div > head {
+div > div > tei_head {
   font-size: 155%;
 }
-div > div > div > head {
+div > div > div > tei_head {
   font-size: 140%;
 }
-div > div > div > div > head,
-list > head {
+div > div > div > div > tei_head,
+list > tei_head {
   font-size: 130%;
 }
-div > div > div > div > div > head {
+div > div > div > div > div > tei_head {
   font-size: 120%;
 }
-div > div > div > div > div > div head {
+div > div > div > div > div > div tei_head {
   font-size: 110%;
 }
-figure > head {
+figure > tei_head {
   display: block;
   margin: 1.5em auto 1.5em auto;
   padding: .5em 1.5em 1.5em 1.5em;
@@ -860,6 +860,10 @@ lg {
   display: block;
   margin-top: 1em;
   margin-bottom: 1em;
+}
+lg tei_head {
+  font-size: 110%;
+  text-indent: -0.25em;
 }
 link {
   /* Empty Rule Set */
@@ -1646,7 +1650,7 @@ TEI table {
   margin-bottom: 2em;
   font-size: 12pt;
 }
-table > head {
+table > tei_head {
   text-align: center;
 }
 teiHeader {

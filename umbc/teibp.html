@@ -28,7 +28,12 @@ if (tei == null) {
 }
 else {
 
-  $("#TEI").append(tei);
+  console.log(tei);
+
+  tei = tei.replace(/<head/g, "<tei_head");
+  tei = tei.replace(/<\/head/g, "</tei_head");
+
+  $("#TEI").html(tei);
 }
 
 </script>
